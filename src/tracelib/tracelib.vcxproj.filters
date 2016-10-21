@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="linearmath">
+      <UniqueIdentifier>{1392570f-b986-42f3-aa68-c569607b4f54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tracer">
+      <UniqueIdentifier>{728ef821-dbd7-493d-8d9b-cb396bcad9ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shapes">
+      <UniqueIdentifier>{1d825556-6594-44e8-b4bd-2257b2c75002}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="linearmath\_VectorTest.cpp">
+      <Filter>linearmath</Filter>
+    </ClCompile>
+    <ClCompile Include="linearmath\main.cpp">
+      <Filter>linearmath</Filter>
+    </ClCompile>
+    <ClCompile Include="linearmath\profiler.cpp">
+      <Filter>linearmath</Filter>
+    </ClCompile>
+    <ClCompile Include="shapes\ishape.cpp">
+      <Filter>shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="shapes\sphere.cpp">
+      <Filter>shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="tracer\ray.cpp">
+      <Filter>tracer</Filter>
+    </ClCompile>
+    <ClCompile Include="tracer\RayTracer.cpp">
+      <Filter>tracer</Filter>
+    </ClCompile>
+    <ClCompile Include="tracer\imagemap.cpp">
+      <Filter>tracer</Filter>
+    </ClCompile>
+    <ClCompile Include="tracer\scene.cpp">
+      <Filter>tracer</Filter>
+    </ClCompile>
+    <ClCompile Include="shapes\plane.cpp">
+      <Filter>shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="tracer\rayintersection.cpp">
+      <Filter>tracer</Filter>
+    </ClCompile>
+    <ClCompile Include="tracer\light.cpp">
+      <Filter>tracer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="linearmath\_VectorTest.h">
+      <Filter>linearmath</Filter>
+    </ClInclude>
+    <ClInclude Include="linearmath\fundamentalmath.h">
+      <Filter>linearmath</Filter>
+    </ClInclude>
+    <ClInclude Include="linearmath\mat3x3.h">
+      <Filter>linearmath</Filter>
+    </ClInclude>
+    <ClInclude Include="linearmath\profiler.h">
+      <Filter>linearmath</Filter>
+    </ClInclude>
+    <ClInclude Include="linearmath\vector2d.h">
+      <Filter>linearmath</Filter>
+    </ClInclude>
+    <ClInclude Include="linearmath\vector3d.h">
+      <Filter>linearmath</Filter>
+    </ClInclude>
+    <ClInclude Include="linearmath\vector4d.h">
+      <Filter>linearmath</Filter>
+    </ClInclude>
+    <ClInclude Include="shapes\ishape.h">
+      <Filter>shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="shapes\sphere.h">
+      <Filter>shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="tracer\ray.h">
+      <Filter>tracer</Filter>
+    </ClInclude>
+    <ClInclude Include="tracer\RayTracer.h">
+      <Filter>tracer</Filter>
+    </ClInclude>
+    <ClInclude Include="tracer\imagemap.h">
+      <Filter>tracer</Filter>
+    </ClInclude>
+    <ClInclude Include="tracer\scene.h">
+      <Filter>tracer</Filter>
+    </ClInclude>
+    <ClInclude Include="shapes\plane.h">
+      <Filter>shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="tracer\rayintersection.h">
+      <Filter>tracer</Filter>
+    </ClInclude>
+    <ClInclude Include="tracer\light.h">
+      <Filter>tracer</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
