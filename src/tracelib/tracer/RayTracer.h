@@ -6,27 +6,32 @@
 #include "ray.h"
 #include "imagemap.h"
 #include "..\tracer\scene.h"
+#include <stack>
 
-class Scene;
-
-class RayTracer
-{
+class RayTracer {
 public:
-	RayTracer();
-	~RayTracer();
-	std::string Run( Imagemap** imgBuffer);
-	linearmath::vec3<float> Trace( const Ray& ray , const float distanse );
-	void    setScene(Scene* scene);
-	linearmath::vec3<float> getLight() { return _scene->getLight(0)->getCenter(); }
-	void setLight(const linearmath::vec3<float>& newLight) { _scene->getLight(0)->setPosition(newLight, 0.5f ); };
-	void refresh() { message = Run(&_imgBuffer); };
-	std::string message;
-	linearmath::vec3<float>  cameraPos;
-	linearmath::vec3<float>  shader( const Ray& ray , RayIntersection& intPoint );
-	bool findIntersections(const Ray& ray, RayIntersection& intersection);
-private:
-	Scene*  _scene;
-	Imagemap *_imgBuffer;
-
+  RayTracer();
+  ~RayTracer();
+  std::string Run();
+  linearmath::vec3<float> Trace(const Ray &ray, float distanse);
+  void setScene(Scene *scene);
+  linearmath::vec3<float> getLight() { 
+    return scene_->getLight(0)->getCenter();
+  }
+  void setLight(const linearmath::vec3<float> &newLight) {
+    scene_->getLight(0)->setPosition(newLight, 0.5f); 
+  }
+  void refresh() { 
+    message = Run();
+  };
+  linearmath::vec3<float> shader(const Ray &ray);
+  bool findIntersections(const Ray &ray);
+public:
+  linearmath::vec3<float>  cameraPos;
+  std::string message;
+  double render_time_;
+  Scene* scene_;
+  Imagemap &imgBuffer_;
+  std::stack<RayIntersection> intersection_point_;
 };
 

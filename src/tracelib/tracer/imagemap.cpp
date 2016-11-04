@@ -1,26 +1,23 @@
 #include "imagemap.h"
 
+const size_t bitsPerPixel = 3;
 
 
-Imagemap::Imagemap()
-{
+Imagemap::Imagemap() {
 }
 
-Imagemap::Imagemap(size_t width, size_t height)
-{
-	// Allocating memory for RGBA-imagemap ( 4 channels by 1 byte per channel );
-	_width  = width;
-	_height = height;
-	_imgData = new unsigned char[ width*height*4];
+Imagemap::Imagemap(size_t width, size_t height) {
+  // Allocating memory for RGBA-imagemap ( 4 channels by 1 byte per channel );
+  width_ = width;
+  height_ = height;
+  imgData_ = new unsigned char[width*height *bitsPerPixel];
 }
 
-Imagemap::~Imagemap()
-{
-	delete[] _imgData;
+Imagemap::~Imagemap() {
+  delete[] imgData_;
 }
 
-void Imagemap::reset()
-{
-	const int value = 0;
-	memset(_imgData, value, (_width*_height*4) / sizeof(value));
+void Imagemap::reset() {
+  const int value = 0;
+  memset(imgData_, value, (width_*height_*bitsPerPixel) / sizeof(value));
 }

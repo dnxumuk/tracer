@@ -13,6 +13,12 @@ namespace linearmath
 		T x, y, z;
 		vec3();
 		vec3(T const x, T const y, T const z);
+    vec3(const vec3&rv) {
+      x = rv.x;
+      y = rv.y;
+      z = rv.z;
+    }
+
 
         bool     operator==(vec3<T> const& v) const;
 		vec3<T>  operator+ (vec3<T> const& v) const;
@@ -155,9 +161,9 @@ namespace linearmath
 	template<typename T>
 	inline vec3<T> vec3<T>::getNormalized() const
 	{
-		float const length_reciprocal{1.0f / this->length()};
+		float length_reciprocal = 1.0f / this->length();
 		return vec3<T>{this->x * length_reciprocal, this->y * length_reciprocal, this->z * length_reciprocal};
-	}
+  }
 
 	template<typename T>
 	inline float vec3<T>::distanceTo(vec3<T> const& v) const
@@ -186,12 +192,11 @@ namespace linearmath
 		return (*this) - this->projection_on(v);
 	}
 
-	template<typename T>
-	T vec3<T>::dot(vec3<T> const& v) const
-	{
-		T ret = x * v.x + y * v.y + z * v.z;
-		return ret;
-	}
+template<typename T>
+    T vec3<T>::dot(vec3<T> const& v) const {
+  T ret = x * v.x + y * v.y + z * v.z;
+  return ret;
+}
 
 	template<typename T>
 	inline vec3<T> vec3<T>::cross(vec3<T> const& v) const

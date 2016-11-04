@@ -3,7 +3,12 @@
 //
 
 #pragma once
-
+struct RenderStatistics {
+  size_t rendered_frames_;
+  double min_time;
+  double max_time;
+  double time_sum;
+};
 
 class CviewerView : public CView
 {
@@ -46,6 +51,8 @@ public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 private:
 	CPoint prevMousePos;
+  HBITMAP hBitmap_;
+  RenderStatistics statistics_;
 };
 
 #ifndef _DEBUG  // debug version in viewerView.cpp

@@ -1,40 +1,32 @@
 #include "scene.h"
 
 Scene::Scene() {
-	this->_shapes = new std::vector<IShape*>();
-	this->_lights = new std::vector<Light*>();
-	sceneSize = 0;
+  sceneSize = 0;
 }
 
 Scene::Scene(size_t shapesCount) {
-	this->_shapes = new std::vector<IShape*>(shapesCount, nullptr);
-	this->_lights = new std::vector<Light*>();
-	sceneSize = 0;
+  shapes_.reserve(shapesCount);
+  sceneSize = shapesCount;
 }
 
 
-void Scene::addShape( IShape & shape ) {
-	_shapes->push_back( &shape );
-	sceneSize++;
+void Scene::addShape(IShape &shape) {
+  shapes_.push_back(&shape);
+  ++sceneSize;
 }
 
-void Scene::addLight( Light & light) {
-	_lights->push_back(&light);
+void Scene::addLight( Light &light) {
+  lights_.push_back(&light);
 }
 
 
 Light* Scene::getLight(size_t lightPos) {
-	return _lights->at(lightPos);
+  return lights_.at(lightPos);
 }
 
-IShape * Scene::operator[](const size_t shapeNumber) {
-	if ( shapeNumber > sceneSize )
-		return nullptr;
-	return(*this->_shapes)[shapeNumber];
-
+IShape* Scene::operator[](size_t shapeNumber) {
+   return (shapeNumber < sceneSize) ? shapes_[shapeNumber] : nullptr;
 }
 
 Scene::~Scene() {
-	delete _shapes;
-	delete _lights;
 }

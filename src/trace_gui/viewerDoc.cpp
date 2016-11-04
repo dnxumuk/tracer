@@ -85,30 +85,30 @@ void CviewerDoc::OnFileOpen()
 void CviewerDoc::LoadScene()
 {
 	Scene* scene = new Scene();
-	//Sphere* sp = new Sphere( { -4.f, -2.f, 0.f }, 1.f );
+	//Sphere* sp = new Sphere( { 0.f, 0.f, -10.f }, 2.f );
 	//scene->addShape( *sp );
 
-    Plane* pl = new Plane(linearmath::vec4<float>{ 0.f, 0.f, 1.0f, -10.f });
-	scene->addShape(*pl);
+  Plane* sp = new Plane(linearmath::vec4<float>{ 0.f, 1.f, 0.0f, -100.f });
+  scene->addShape(*sp);
 
-	//Sphere* sp1 = new Sphere( { 0.f, 0.f, 0.f }, 1.f);
-	//scene->addShape(*sp1);
+  Sphere* sp1 = new Sphere({0.f, 15.f, 0.f}, 10.f);
+  scene->addShape(*sp1);
 
-	//Sphere* sp2 = new Sphere({ -4.f, 4.f, 2.f }, 2.f);
-	//scene->addShape(*sp2);
+ Sphere* sp2 = new Sphere({ -4.f, 4.f, 2.f }, 2.f);
+ scene->addShape(*sp2);
 
-	//Sphere* sp3 = new Sphere({ 4.f, 4.f, 2.f }, 2.f);
-	//scene->addShape(*sp3);
+  //Sphere* sp3 = new Sphere({ 4.f, 4.f, 2.f }, 2.f);
+  //scene->addShape(*sp3);
 
-	Light* l1 = new Light();
-	l1->setPosition({ 0.f,5.f,5.f }, 0.5f);
-	scene->addLight(*l1);
+  Light* l1 = new Light();
+  l1->setPosition({0.f,5.f,50.f}, .1f);
+  scene->addLight(*l1);
 
 
 	// Tracing
 
 	tracer->setScene(scene);
-	this->message = tracer->Run( &renderedImage ).c_str();
+	this->message = tracer->Run().c_str();
 }
 
 // CviewerDoc commands

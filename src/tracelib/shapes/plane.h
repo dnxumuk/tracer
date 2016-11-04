@@ -4,22 +4,23 @@
 
 class Plane : public IShape {
 public:
-	Plane();
-	Plane( linearmath::vec4<float>& coeff);
-	~Plane();
+  Plane();
+  Plane(linearmath::vec4<float>& coeff);
+  ~Plane();
 
-	bool isCrossBoundingBox(const Ray& ray);
-	virtual bool isIntersects(const Ray& ray, RayIntersection& intersection );
-	virtual linearmath::vec3<float>&  getNormal(const linearmath::vec3<float>& point);
-	virtual linearmath::vec3<float> getColor(const Ray& ray,
-											 const linearmath::vec3<float>& point,
-											 const linearmath::vec3<float>& light) ;
+  bool isCrossBoundingBox(const Ray& ray);
+  virtual bool isIntersects(const Ray& ray) override;
+  const linearmath::vec3<float>&  getNormal() const ;
+  virtual linearmath::vec3<float> getColor(const Ray& ray,
+      const linearmath::vec3<float>& point,
+      const linearmath::vec3<float>& light);
 protected:
-	linearmath::vec3<float> _boundingBoxMin;
-	linearmath::vec3<float> _boundingBoxMax;
+  linearmath::vec3<float> _boundingBoxMin;
+  linearmath::vec3<float> _boundingBoxMax;
 private:
-	linearmath::vec4<float> _coef;
-    // Normilized normal is stored
-    linearmath::vec3<float> normal_;
-	float _distance;
+  linearmath::vec4<float> _coef;
+  // Normilized normal is stored
+  linearmath::vec3<float> normal_;
+  float _distance;
+  float dividen_ = -666.0;
 };

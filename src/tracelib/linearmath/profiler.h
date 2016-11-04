@@ -22,8 +22,8 @@ public:
     void finish();
     void pause();
     void unpause();
-	std::string getResults();
-
+    std::string getResults();
+    double getFPS() const;
     inline void setMeasurements( bool value = true );
     inline void setKeepingLog( bool value = true );
     inline bool isMeadurement() const;

@@ -1,21 +1,25 @@
 #pragma once
-
 #include <memory.h>
 
-class Imagemap
-{
+class Imagemap{
 public:
-	Imagemap();
-	Imagemap( size_t width, size_t height );
-	~Imagemap();
+  Imagemap();
+  Imagemap(size_t width, size_t height);
+  ~Imagemap();
 
-	unsigned char* getData() const { return _imgData; };
-	size_t  width()  const { return _width; };
-	size_t  height() const { return _height; };
-	void reset();
+  unsigned char* getData() const { 
+    return imgData_;
+  };
+  size_t width() const { 
+    return width_;
+  };
+  size_t height() const { 
+    return height_;
+  };
+  void reset();
 private:
-	unsigned char *_imgData;
-	size_t         _width;
-	size_t         _height;
+  unsigned char *imgData_;
+  size_t width_;
+  size_t height_;
 };
 

@@ -10,6 +10,9 @@
     <Filter Include="shapes">
       <UniqueIdentifier>{1d825556-6594-44e8-b4bd-2257b2c75002}</UniqueIdentifier>
     </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{111e3a34-a6c0-4315-bb2d-5426364d2c7f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="linearmath\_VectorTest.cpp">
@@ -47,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="tracer\light.cpp">
       <Filter>tracer</Filter>
+    </ClCompile>
+    <ClCompile Include="common\defaults.cpp">
+      <Filter>common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="tracer\light.h">
       <Filter>tracer</Filter>
+    </ClInclude>
+    <ClInclude Include="common\defaults.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

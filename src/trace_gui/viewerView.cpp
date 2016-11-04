@@ -17,6 +17,7 @@
 #include "..\tracelib\tracer\imagemap.h"
 #include "..\tracelib\linearmath\vector3d.h"
 #include "..\tracelib\linearmath\mat3x3.h"
+#include <string>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -39,58 +40,68 @@ END_MESSAGE_MAP()
 
 // CviewerView construction/destruction
 
-CviewerView::CviewerView()
-{
-	// TODO: add construction code here
-
+CviewerView::CviewerView() :
+  hBitmap_(NULL) {
+  statistics_ = {0};
+  statistics_.min_time = 9999999999;
+  statistics_.max_time = 0.0;
 }
 
-CviewerView::~CviewerView()
-{
+CviewerView::~CviewerView(){
 }
 
-BOOL CviewerView::PreCreateWindow(CREATESTRUCT& cs)
-{
+BOOL CviewerView::PreCreateWindow(CREATESTRUCT& cs) {
 	// TODO: Modify the Window class or styles here by modifying
 	//  the CREATESTRUCT cs
-
 	return CView::PreCreateWindow(cs);
 }
 
-// CviewerView drawing
-
 void CviewerView::OnDraw(CDC* /*pDC*/)
 {
-	CviewerDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
-	if (!pDoc)
-		return;
-	if (pDoc->renderedImage == nullptr)
-		return;
+  CviewerDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
+  if (!pDoc)
+    return;
+  Imagemap& image = pDoc->tracer->imgBuffer_;
 
-	auto canvas = GetDC();
-	HBITMAP hBitmap = CreateBitmap( pDoc->renderedImage->width(), pDoc->renderedImage->height(), 1, 32, 
-		                            pDoc->renderedImage->getData() );
-	CClientDC dc(this);
-	CBitmap bmp;
-	bmp.Attach(hBitmap);
-	CDC      dcSource;
-	dcSource.CreateCompatibleDC(&dc);
+  //CDC dcSource;
 
-	BITMAP bmpInfo;
-	bmp.GetBitmap(&bmpInfo);
-	dcSource.SelectObject(&bmp);
+  BITMAPINFO bmi = {0};
+  bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  bmi.bmiHeader.biWidth = static_cast<LONG>(image.width());
+  bmi.bmiHeader.biHeight = static_cast<LONG>(image.height());
+  bmi.bmiHeader.biPlanes = 1;
+  bmi.bmiHeader.biBitCount = 24;
 
-	CRect rectDest;
-	GetClientRect(&rectDest);
-	int st = dc.BitBlt(0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight, &dcSource, 0, 0, SRCCOPY ); //returned 1
-	DeleteObject(hBitmap);
-	auto pDC = GetDC();
-	pDC->SetBkMode(TRANSPARENT);
-	pDC->TextOutW( 10, 10, CString(pDoc->tracer->message.c_str()) );
+  CClientDC dc(this);
+  SetDIBitsToDevice(dc, 0, 0, 
+                    static_cast<DWORD>(image.width()), static_cast<LONG>(image.height()), 
+                    0, 0, 0, 
+                    static_cast<UINT>(image.height()), image.getData(), &bmi, 0);
+  auto pDC = GetDC();
+  
+  double fps = pDoc->tracer->render_time_;
+  if (fps > statistics_.max_time)
+    statistics_.max_time = fps;
+  else if (fps < statistics_.min_time)
+    statistics_.min_time = fps;
+  statistics_.rendered_frames_++;
+  statistics_.time_sum+=fps;
+  
+  std::string frames = "Frames : " + std::to_string(statistics_.rendered_frames_);
+  std::string mintime = "Highest FPS : " + std::to_string(statistics_.max_time);
+  std::string maxtime = "Lowest  FPS : " + std::to_string(statistics_.min_time);
+  std::string avgtime = "Average FPS : " + std::to_string(statistics_.time_sum/statistics_.rendered_frames_);
+
+  pDC->SetBkMode(TRANSPARENT);
+  pDC->TextOutW(10, 10, CString(pDoc->tracer->message.c_str()));
+
+  pDC->TextOutW(510, 30, CString(frames.c_str()));
+  pDC->TextOutW(510, 50, CString(mintime.c_str()));
+  pDC->TextOutW(510, 70, CString(maxtime.c_str()));
+  pDC->TextOutW(510, 100, CString(avgtime.c_str()));
 
 }
-
 
 // CviewerView printing
 
@@ -189,36 +200,32 @@ void CviewerView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 
 
-void CviewerView::OnMouseMove(UINT nFlags, CPoint point)
-{
-	// TODO: Add your message handler code here and/or call default
-	if (nFlags && MK_LBUTTON)
-	{
-		CPoint mouseDelta = point - prevMousePos;
-		const float oneDegree = 3.14 / 180.;
-		float rotateAxis  = oneDegree * (mouseDelta.x / 5.);
-		float rotateAxis2 = oneDegree * (mouseDelta.y / 5.);
+void CviewerView::OnMouseMove(UINT nFlags, CPoint point) {
+  if (nFlags && MK_LBUTTON) {
+    CPoint mouseDelta = point - prevMousePos;
+    const float oneDegree = 3.14156f / 180.f;
+    float rotateAxis = oneDegree * (mouseDelta.x / 5.f);
+    float rotateAxis2 = oneDegree * (mouseDelta.y / 5.f);
 
-		CviewerDoc* pDoc = GetDocument();
+    CviewerDoc* pDoc = GetDocument();
 
-		auto rMat  = linearmath::mat3x3<float>::rotation_around_y_axis( -rotateAxis );
-		auto rMat1 = linearmath::mat3x3<float>::rotation_around_x_axis( rotateAxis2);
+    auto rMat = linearmath::mat3x3<float>::rotation_around_y_axis(-rotateAxis);
+    auto rMat1 = linearmath::mat3x3<float>::rotation_around_x_axis(rotateAxis2);
 
-		auto pos1 = rMat*pDoc->tracer->cameraPos;
-		auto pos2 = rMat1*pos1;
+    auto pos1 = rMat*pDoc->tracer->cameraPos;
+    auto pos2 = rMat1*pos1;
 
-		CString msg;
-		msg.Format( L"Camera pos: %.2f , %.2f , %.2f", pos2.x, pos2.y, pos2.z);
-		//AfxMessageBox(msg);
+    CString msg;
+    msg.Format(L"Camera pos: %.2f , %.2f , %.2f", pos2.x, pos2.y, pos2.z);
+    //AfxMessageBox(msg);
 
-		pDoc->tracer->cameraPos = pos2;
-		this->prevMousePos = point;
-		pDoc->tracer->refresh();
-		pDoc->UpdateAllViews(nullptr);
+    pDoc->tracer->cameraPos = pos2;
+    this->prevMousePos = point;
+    pDoc->tracer->refresh();
+    pDoc->UpdateAllViews(nullptr);
 
-		//AfxMessageBox( L"Camera rotating detected !");
-	}
-	CView::OnMouseMove(nFlags, point);
+  }
+  CView::OnMouseMove(nFlags, point);
 }
 
 
