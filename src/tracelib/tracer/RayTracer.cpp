@@ -9,6 +9,7 @@ using namespace linearmath;
 
 RayTracer::RayTracer() : imgBuffer_(*new Imagemap(500,400)) {
   scene_ = nullptr;
+  //cameraPos = {0.0f , 0.0f , 100.0f};
   cameraPos = {0.0f , 0.0f , 100.0f};
 }
 
@@ -27,7 +28,6 @@ inline float clamp(float val, float low, float high) {
 std::string RayTracer::Run() {
   if (!scene_)
     return string();
-  
   imgBuffer_.reset();
 
   const size_t width  = imgBuffer_.width();
@@ -41,7 +41,7 @@ std::string RayTracer::Run() {
   prf.start();
   const float cameraDist = 4.0f;
   const float  min = -1.0f * cameraDist;
-  const float  max = 1.0f * cameraDist;
+  const float  max =  1.0f * cameraDist;
   float aspect = static_cast<float>(width) / static_cast<float>(height);
 
   float dX = (max - min) / static_cast<float>(width) * aspect;
@@ -53,6 +53,10 @@ std::string RayTracer::Run() {
   float distance = 100.0f;
 
   Ray ray(cameraPos, vec3<float>());
+  
+  linearmath::vec3<float> dx_dir = {};
+  linearmath::vec3<float> dy_dir = {};
+
   
   for (size_t y(0); y < height; ++y) {
     float sx = min;
@@ -149,7 +153,6 @@ bool RayTracer::findIntersections(const Ray & ray) {
   for (size_t i(0); i < scene_->size(); ++i) {
     if ((*scene_)[i]->isIntersects(ray)) {
       intersectionFound = true;
-      return intersectionFound;
     }
   }
   return intersectionFound;

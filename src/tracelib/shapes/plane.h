@@ -5,7 +5,7 @@
 class Plane : public IShape {
 public:
   Plane();
-  Plane(linearmath::vec4<float>& coeff);
+  Plane(const linearmath::vec3<float>& coeff, float dParam);
   ~Plane();
 
   bool isCrossBoundingBox(const Ray& ray);
@@ -18,7 +18,7 @@ protected:
   linearmath::vec3<float> _boundingBoxMin;
   linearmath::vec3<float> _boundingBoxMax;
 private:
-  linearmath::vec4<float> _coef;
+  linearmath::vec3<float> _coef;
   // Normilized normal is stored
   linearmath::vec3<float> normal_;
   float _distance;

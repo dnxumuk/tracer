@@ -19,6 +19,7 @@ namespace linearmath
       z = rv.z;
     }
 
+    inline bool vec3<T>::crossSign(vec3<T> const& v) const;
 
         bool     operator==(vec3<T> const& v) const;
 		vec3<T>  operator+ (vec3<T> const& v) const;
@@ -203,6 +204,11 @@ template<typename T>
 	{
 		return vec3<T>{this->y * v.z - this->z * v.y, this->z * v.x - this->x * v.z, this->x * v.y - this->y * v.x};
 	}
+
+  template<typename T>
+  inline bool vec3<T>::crossSign(vec3<T> const& v) const {
+    return( x*v.y - y*v.x ) > 0;
+  }
 
 	template<typename T>
 	inline vec3<T> operator*(vec3<T> const& v)

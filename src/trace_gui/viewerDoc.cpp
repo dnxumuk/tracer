@@ -15,8 +15,11 @@
 
 #include "..\tracelib\tracer\scene.h"
 #include "..\tracelib\tracer\RayTracer.h"
+
 #include "..\tracelib\tracer\light.h"
 #include "..\tracelib\shapes\plane.h"
+#include "../tracelib/shapes/face3.h"
+
 #include "..\tracelib\linearmath\vector4d.h"
 
 
@@ -68,7 +71,35 @@ void CviewerDoc::Serialize(CArchive& ar)
 	}
 }
 
+void AddPyramid(Scene *scene) {
+const float ceil = 0;
+const float hight = 10;
+  linearmath::vec3<float> points1[][4] = {
+     // Floor
+    {
+      {0.0f,  5.0f, ceil},
+      {5.0f, -5.0f, ceil},
+      {-5.0f,-5.0f, ceil}
+    }, {
+    // 1-2
+      {0.0f,  5.0f, ceil},
+      {5.0f, -5.0f, ceil},
+      {2.5f,  0.0f, hight}
+    },{
+    // 2-3
+      {2.5f,  0.0f, hight},
+      {5.0f, -5.0f, ceil},
+      {-5.0f,-5.0f, ceil}
+    }, {
+      {0.0f,  5.0f, ceil},
+      {2.5f,  0.0f, hight},
+      {-5.0f,-5.0f, ceil}
+    }
+  };
+  for (int i=0; i<4; ++i)
+  scene->addShape(*new Face3(points1[0]));
 
+}
 void CviewerDoc::OnFileOpen()
 {
 	CFileDialog dlg( TRUE, nullptr, nullptr,
@@ -82,29 +113,38 @@ void CviewerDoc::OnFileOpen()
 	}
 	UpdateAllViews( nullptr );
 }
-void CviewerDoc::LoadScene()
-{
-	Scene* scene = new Scene();
-	//Sphere* sp = new Sphere( { 0.f, 0.f, -10.f }, 2.f );
-	//scene->addShape( *sp );
+void CviewerDoc::LoadScene() {
+  Scene* scene = new Scene();
 
-  Plane* sp = new Plane(linearmath::vec4<float>{ 0.f, 1.f, 0.0f, -100.f });
-  scene->addShape(*sp);
+  scene->addShape(*new Sphere({0.f, 0.f, -10.f}, 2.f));
 
-  Sphere* sp1 = new Sphere({0.f, 15.f, 0.f}, 10.f);
-  scene->addShape(*sp1);
+  linearmath::vec3<float> points[] = {
+    { 10.0f, 10.0f, 0.0f},
+    { 0.0f, -5.0f, 5.0f},
+    {-10.0f, 10.0f, 5.0f}
+  };
+  //scene->addShape(*new
+  //   Face3(points)
+  //);
+  linearmath::vec3<float> points1[] = {
+    {70.0f, 10.0f, -60.0f},
+    {30.0f,-10.0f, 30.0f},
+    {-50.0f, 10.0f, -60.0f}
+  };
+  scene->addShape(*new
+    Face3(points1)
+  );
 
- Sphere* sp2 = new Sphere({ -4.f, 4.f, 2.f }, 2.f);
- scene->addShape(*sp2);
-
-  //Sphere* sp3 = new Sphere({ 4.f, 4.f, 2.f }, 2.f);
-  //scene->addShape(*sp3);
+  //scene->addShape(*new Plane(linearmath::vec3<float>{ 0.f, 1.f, 0.0f}, -100.f));
+  //scene->addShape(*new Sphere({  0.f, 5.f, 0.f}, 20.f));
+  //scene->addShape(*new Sphere({ -4.f, 4.f , 2.f}, 2.f));
+  //scene->addShape(*new Sphere({ 4.f, 4.f, 2.f }, 2.f));
 
   Light* l1 = new Light();
   l1->setPosition({0.f,5.f,50.f}, .1f);
   scene->addLight(*l1);
 
-
+  AddPyramid(scene);
 	// Tracing
 
 	tracer->setScene(scene);

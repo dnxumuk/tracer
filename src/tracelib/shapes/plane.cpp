@@ -9,7 +9,7 @@ using namespace linearmath;
 // The default plane is plane z=0
 // the pane placed on X0Y plane
 Plane::Plane() {
-  _coef = {0.f, 0.f, 0.f, 1.f};
+  _coef = {0.f, 0.f, 0.f};
   _distance = 0.f;
   _boundingBoxMin = {val, val, val};
   _boundingBoxMax = {-val, -val, -val};
@@ -18,13 +18,13 @@ Plane::Plane() {
   normal_.normalize();
 }
 
-Plane::Plane(linearmath::vec4<float>& coef) {
+Plane::Plane(const linearmath::vec3<float>& coef, float dParam) {
   _coef = coef;
-  _distance = coef.w;
+  _distance = dParam;
   _boundingBoxMin = {val, val, val};
   _boundingBoxMax = {-val, -val, -val};
 
-  normal_ = { _coef.x,_coef.y,_coef.z };
+  normal_ = { -_coef.x,-_coef.y,-_coef.z };
   normal_.normalize();
 }
 
@@ -38,10 +38,9 @@ bool Plane::isCrossBoundingBox(const Ray & ray) {
 bool Plane::isIntersects(const Ray &ray) {
   // T = - (D-normal*origin)/ normal*direction
   // Intersection = origin + t*direction
-  //auto normal = normal_;
   // Calculation of t
-  float divider = normal_.dot(ray.getDirection());
-  float dividen = _distance - normal_.dot(ray.getOrigin());
+  float divider = _coef.dot(ray.getDirection());
+  float dividen = _distance - _coef.dot(ray.getOrigin());
   if (divider != 0.0 && dividen != 0.0) {
     float coef_t = dividen / divider;
     RayIntersection &intersection = ray.getIntersection();

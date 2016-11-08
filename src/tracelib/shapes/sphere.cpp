@@ -47,12 +47,12 @@ bool Sphere::isIntersects(const Ray &ray) {
 
     float t1 = 0.5f*(-B - sqr_root);
     float t2 = 0.5f*(-B + sqr_root);
-    float tValid = std::fmax(t1, t2);
+    float tValid = std::fmin(t1, t2);
   
     if (tValid < 0)
       return false;
 
-    if (ray.getIntersectionConst().intsctDistance <= tValid)
+    if (tValid >= ray.getIntersectionConst().intsctDistance)
       return false;
 
     RayIntersection &intersection = ray.getIntersection();

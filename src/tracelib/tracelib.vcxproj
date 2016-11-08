@@ -23,6 +23,8 @@
     <ClCompile Include="linearmath\main.cpp" />
     <ClCompile Include="linearmath\profiler.cpp" />
     <ClCompile Include="linearmath\_VectorTest.cpp" />
+    <ClCompile Include="shapes\face3.cpp" />
+    <ClCompile Include="shapes\FaceN.cpp" />
     <ClCompile Include="shapes\ishape.cpp" />
     <ClCompile Include="shapes\plane.cpp" />
     <ClCompile Include="shapes\sphere.cpp" />
@@ -42,6 +44,8 @@
     <ClInclude Include="linearmath\vector3d.h" />
     <ClInclude Include="linearmath\vector4d.h" />
     <ClInclude Include="linearmath\_VectorTest.h" />
+    <ClInclude Include="shapes\face3.h" />
+    <ClInclude Include="shapes\FaceN.h" />
     <ClInclude Include="shapes\ishape.h" />
     <ClInclude Include="shapes\plane.h" />
     <ClInclude Include="shapes\sphere.h" />

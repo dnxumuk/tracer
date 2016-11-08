@@ -54,6 +54,12 @@
     <ClCompile Include="common\defaults.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="shapes\face3.cpp">
+      <Filter>shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="shapes\FaceN.cpp">
+      <Filter>shapes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="linearmath\_VectorTest.h">
@@ -106,6 +112,12 @@
     </ClInclude>
     <ClInclude Include="common\defaults.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="shapes\face3.h">
+      <Filter>shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="shapes\FaceN.h">
+      <Filter>shapes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

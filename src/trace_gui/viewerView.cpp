@@ -36,6 +36,7 @@ BEGIN_MESSAGE_MAP(CviewerView, CView)
 	ON_WM_KEYDOWN()
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONDOWN()
+  ON_WM_MOUSEWHEEL()
 END_MESSAGE_MAP()
 
 // CviewerView construction/destruction
@@ -215,11 +216,13 @@ void CviewerView::OnMouseMove(UINT nFlags, CPoint point) {
     auto pos1 = rMat*pDoc->tracer->cameraPos;
     auto pos2 = rMat1*pos1;
 
+
     CString msg;
     msg.Format(L"Camera pos: %.2f , %.2f , %.2f", pos2.x, pos2.y, pos2.z);
     //AfxMessageBox(msg);
 
     pDoc->tracer->cameraPos = pos2;
+
     this->prevMousePos = point;
     pDoc->tracer->refresh();
     pDoc->UpdateAllViews(nullptr);
@@ -228,10 +231,18 @@ void CviewerView::OnMouseMove(UINT nFlags, CPoint point) {
   CView::OnMouseMove(nFlags, point);
 }
 
-
 void CviewerView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: Add your message handler code here and/or call default
 	this->prevMousePos = point;
 	CView::OnLButtonDown(nFlags, point);
+}
+
+BOOL CviewerView::OnMouseWheel(UINT fFlags, short zDelta, CPoint point) {
+  CviewerDoc* pDoc = GetDocument();
+  pDoc->tracer->cameraPos .z += (zDelta > 0.0f)? 1.0f : -1.0f;
+  pDoc->tracer->refresh();
+  pDoc->UpdateAllViews(nullptr);
+  CView::OnMouseWheel(fFlags,zDelta,point);
+  return TRUE;
 }

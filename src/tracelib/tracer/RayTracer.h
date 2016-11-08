@@ -28,6 +28,7 @@ public:
   bool findIntersections(const Ray &ray);
 public:
   linearmath::vec3<float>  cameraPos;
+  linearmath::vec3<float>  cameraLookAt;
   std::string message;
   double render_time_;
   Scene* scene_;
