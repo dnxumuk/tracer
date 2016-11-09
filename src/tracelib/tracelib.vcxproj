@@ -28,6 +28,7 @@
     <ClCompile Include="shapes\ishape.cpp" />
     <ClCompile Include="shapes\plane.cpp" />
     <ClCompile Include="shapes\sphere.cpp" />
+    <ClCompile Include="tracer\camera.cpp" />
     <ClCompile Include="tracer\imagemap.cpp" />
     <ClCompile Include="tracer\light.cpp" />
     <ClCompile Include="tracer\ray.cpp" />
@@ -49,6 +50,7 @@
     <ClInclude Include="shapes\ishape.h" />
     <ClInclude Include="shapes\plane.h" />
     <ClInclude Include="shapes\sphere.h" />
+    <ClInclude Include="tracer\camera.h" />
     <ClInclude Include="tracer\imagemap.h" />
     <ClInclude Include="tracer\light.h" />
     <ClInclude Include="tracer\ray.h" />

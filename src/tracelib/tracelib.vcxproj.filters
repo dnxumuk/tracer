@@ -60,6 +60,9 @@
     <ClCompile Include="shapes\FaceN.cpp">
       <Filter>shapes</Filter>
     </ClCompile>
+    <ClCompile Include="tracer\camera.cpp">
+      <Filter>tracer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="linearmath\_VectorTest.h">
@@ -118,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="shapes\FaceN.h">
       <Filter>shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="tracer\camera.h">
+      <Filter>tracer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
