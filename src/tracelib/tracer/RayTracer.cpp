@@ -5,6 +5,8 @@
 #include <algorithm>
 #include "../common/defaults.h"
 
+#include "camera.h"
+
 using namespace linearmath;
 
 RayTracer::RayTracer() : imgBuffer_(*new Imagemap(500,400)) {
@@ -30,22 +32,36 @@ std::string RayTracer::Run() {
     return string();
   imgBuffer_.reset();
 
-  const size_t width  = imgBuffer_.width();
-  const size_t height = imgBuffer_.height();
+  // Create camera via setting up position and direction
+  Camera camera;
+  camera.setResolution(500,500);
+  camera.setPosition({0.0f,0.0f,100.0f}, {0.0f,0.0f,-1.0f});
+  camera.setRotation(0.0f);
+  camera.setCameraScreenDistance(4.0);
+  camera.setAspect = 1.0f;
 
+  const auto size   = camera.getResolution();
+  const auto width  = size.first;
+  const auto height = size.second;
+  const float cameraDist = camera.getCameraScreenDistance();
+  const auto dxdy = camera.getDxDY();
+
+  float dX = dxdy.first;
+  float dY = dxdy.second;
+
+  //
   std::string msgResults;
   std::string msgHeader = "Rendering image of " + 
     std::to_string(width * height / (float)1'000'000) + " Mpx";
   Profiler prf(msgHeader, true);
 
   prf.start();
-  const float cameraDist = 4.0f;
-  const float  min = -1.0f * cameraDist;
-  const float  max =  1.0f * cameraDist;
-  float aspect = static_cast<float>(width) / static_cast<float>(height);
+  //const float  min = -1.0f * cameraDist;
+  //const float  max =  1.0f * cameraDist;
+  //float aspect = width / static_cast<float>(height);
 
-  float dX = (max - min) / static_cast<float>(width) * aspect;
-  float dY = (max - min) / static_cast<float>(height);
+  //float dX = (max - min) / static_cast<float>(width) * aspect;
+  //float dY = (max - min) / static_cast<float>(height);
 
   float sy = min;
 
@@ -59,11 +75,12 @@ std::string RayTracer::Run() {
 
   
   for (size_t y(0); y < height; ++y) {
-    float sx = min;
+    //float sx = min;
     for (size_t x(0); x < width; ++x) {
-      vec3<float> direction = vec3<float>(sx, sy, 90.f) - cameraPos;
-      ray.resetIntersection();
-      ray.setDirection(direction);
+      camera.getRay(x,y,ray);
+      //vec3<float> direction = vec3<float>(sx, sy, 90.f) - cameraPos;
+      //ray.resetIntersection();
+      //ray.setDirection(direction);
       vec3<float> color = Trace( ray, distance) * 255;
 
       currentPix[2] = static_cast<unsigned char>(color.x);
@@ -72,7 +89,7 @@ std::string RayTracer::Run() {
       currentPix += 3;
       sx += dX;
     }
-    sy += dY;
+    //sy += dY;
   }
   prf.finish();
   render_time_ = prf.getFPS();
