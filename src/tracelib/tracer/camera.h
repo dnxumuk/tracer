@@ -9,7 +9,29 @@ public:
   Camera();
   ~Camera();
   // Getters
-  linearmath::vec3<float> getRay(size_t x, size_t y, Ray &ray) const;
+  void getRay(size_t x, size_t y, Ray &ray) const;
+  void calculateScreen();
+  // FOV
+  void setFOVDegrees(float degrees);
+  void setFOVRadians(float rads);
+  float getFOV(bool in_degrees = true);
+  // Resolution
+  void setResolution(size_t width, size_t height);
+  std::pair<size_t, size_t> getResolution() const;
+  // Camera position
+  void setCameraScreenDistance(float distance);
+  void setPosition(const linearmath::vec3<float> &position,
+                   const linearmath::vec3<float> &direction);
+  void setPosition(const linearmath::vec3<float> &position);
+  void setLookAt(const linearmath::vec3<float> &lookAtPoint);
+  void setRotation(float angle);
+  
+  linearmath::vec3<float> getPosition() const;
+  linearmath::vec3<float> getDirection() const;
+
+  //
+
+  // Sly ....
   std::pair<float, float> getDxDY() const {
     const float half_diagonal = tanf(fov_/2.0f);
     const float w = std::sqrtf(4*half_diagonal*half_diagonal/(1.0f + aspect_*aspect_));
@@ -27,47 +49,17 @@ public:
   float getAspect() const {
     return aspect_;
   }
-  std::pair<size_t, size_t> getResolution() const {
-    return std::make_pair(width_,height_);
-  }
-  linearmath::vec3<float> getPosition() const {
-    return position_;
-  }
-  linearmath::vec3<float> getDirection() const {
-    return direction_;
-  }
-  float getCameraScreenDistance() const {
-    return camera_screen_distance_;
-  }
-  // Setters
-  void setCameraScreenDistance(float distance) {
-    camera_screen_distance_ = distance;
-  }
-  void setResolution(size_t width, size_t height) {
-    width_ = width;
-    height_ = height;
-  }
-  void setPosition(const linearmath::vec3<float> &position,
-                   const linearmath::vec3<float> &direction) {
-    position_ = position;
-    direction_ = direction;
-  }
-  void setPosition(const linearmath::vec3<float> &position) {
-    position_ = position;
-  }
-  void setLookAt(const linearmath::vec3<float> &lookAtPoint) {
-    direction_ = (lookAtPoint - position_).getNormalized();
-  }
-  void setRotation(float angle) {
-  rotation_angle_ = angle;
-  }
+  float getCameraScreenDistance() const;
   void setAspect(float aspect) {
     aspect_ = aspect;
   }
 private:
-  // Resolution
+  // Resolution and screen position
   size_t width_;
   size_t height_;
+  linearmath::vec3<float> screen_position_;
+  linearmath::vec3<float> screen_x_dir_;
+  linearmath::vec3<float> screen_y_dir_;
   // Camera position
   linearmath::vec3<float> position_;
   linearmath::vec3<float> direction_;
