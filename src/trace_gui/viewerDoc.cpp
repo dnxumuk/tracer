@@ -131,20 +131,20 @@ void CviewerDoc::LoadScene() {
     {30.0f,-10.0f, 30.0f},
     {-50.0f, 10.0f, -60.0f}
   };
-  scene->addShape(*new
-    Face3(points1)
-  );
+ // scene->addShape(*new
+ //   Face3(points1)
+ // );
 
   //scene->addShape(*new Plane(linearmath::vec3<float>{ 0.f, 1.f, 0.0f}, -100.f));
-  //scene->addShape(*new Sphere({  0.f, 5.f, 0.f}, 20.f));
-  //scene->addShape(*new Sphere({ -4.f, 4.f , 2.f}, 2.f));
-  //scene->addShape(*new Sphere({ 4.f, 4.f, 2.f }, 2.f));
+  scene->addShape(*new Sphere({  0.f, 5.f, 0.f}, 20.f));
+  scene->addShape(*new Sphere({ -4.f, 4.f , 2.f}, 2.f));
+  scene->addShape(*new Sphere({ 4.f, 4.f, 2.f }, 2.f));
 
   Light* l1 = new Light();
   l1->setPosition({0.f,5.f,50.f}, .1f);
   scene->addLight(*l1);
 
-  AddPyramid(scene);
+  //AddPyramid(scene);
 	// Tracing
 
 	tracer->setScene(scene);

@@ -34,16 +34,17 @@ std::string RayTracer::Run() {
 
   // Create camera via setting up position and direction
   Camera camera;
-  camera.setResolution(500,500);
+  camera.setResolution(500,400);
   camera.setPosition({0.0f,0.0f,100.0f}, {0.0f,0.0f,-1.0f});
   camera.setRotation(0.0f);
-  camera.setCameraScreenDistance(4.0);
-  camera.setAspect = 1.0f;
+  camera.setCameraToScreenDistance(4.0);
+  camera.setFOVDegrees(60.0f);
+  camera.setAspect(1.0f);
 
   const auto size   = camera.getResolution();
   const auto width  = size.first;
   const auto height = size.second;
-  const float cameraDist = camera.getCameraScreenDistance();
+  const float cameraDist = camera.getCameraToScreenDistance();
   const auto dxdy = camera.getDxDY();
 
   float dX = dxdy.first;
@@ -56,7 +57,7 @@ std::string RayTracer::Run() {
   Profiler prf(msgHeader, true);
 
   prf.start();
-  //const float  min = -1.0f * cameraDist;
+  const float  min = -1.0f * cameraDist;
   //const float  max =  1.0f * cameraDist;
   //float aspect = width / static_cast<float>(height);
 
@@ -75,7 +76,7 @@ std::string RayTracer::Run() {
 
   
   for (size_t y(0); y < height; ++y) {
-    //float sx = min;
+    float sx = min;
     for (size_t x(0); x < width; ++x) {
       camera.getRay(x,y,ray);
       //vec3<float> direction = vec3<float>(sx, sy, 90.f) - cameraPos;

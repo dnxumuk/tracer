@@ -19,7 +19,7 @@ public:
   void setResolution(size_t width, size_t height);
   std::pair<size_t, size_t> getResolution() const;
   // Camera position
-  void setCameraScreenDistance(float distance);
+  void setCameraToScreenDistance(float distance);
   void setPosition(const linearmath::vec3<float> &position,
                    const linearmath::vec3<float> &direction);
   void setPosition(const linearmath::vec3<float> &position);
@@ -33,10 +33,10 @@ public:
 
   // Sly ....
   std::pair<float, float> getDxDY() const {
-    const float half_diagonal = tanf(fov_/2.0f);
-    const float w = std::sqrtf(4*half_diagonal*half_diagonal/(1.0f + aspect_*aspect_));
-    const float h = w * aspect_;
-    return std::make_pair(w/width_, h/height_);
+    //const float half_diagonal = tanf(fov_/2.0f);
+    //const float w = ;
+    //const float h = ;
+    return std::make_pair(scr_width_/width_, scr_height_/height_);
 
     //const float  min = -1.0f * cameraDist;
     //const float  max = 1.0f * cameraDist;
@@ -49,17 +49,24 @@ public:
   float getAspect() const {
     return aspect_;
   }
-  float getCameraScreenDistance() const;
+  float getCameraToScreenDistance() const;
   void setAspect(float aspect) {
     aspect_ = aspect;
+	calculateScreen();
   }
 private:
   // Resolution and screen position
   size_t width_;
   size_t height_;
-  linearmath::vec3<float> screen_position_;
-  linearmath::vec3<float> screen_x_dir_;
-  linearmath::vec3<float> screen_y_dir_;
+
+  // Screen position and directions of u and v
+  linearmath::vec3<float> scr_origin_;
+  linearmath::vec3<float> scr_u_dir_;
+  linearmath::vec3<float> scr_v_dir_;
+  float scr_width_;
+  float scr_height_;
+
+
   // Camera position
   linearmath::vec3<float> position_;
   linearmath::vec3<float> direction_;
