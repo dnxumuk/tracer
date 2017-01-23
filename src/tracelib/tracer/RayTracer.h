@@ -8,8 +8,11 @@
 #include "..\tracer\scene.h"
 #include <stack>
 
+
+
 class RayTracer {
 public:
+  void Initialize();
   RayTracer();
   ~RayTracer();
   std::string Run();

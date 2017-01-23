@@ -6,13 +6,108 @@
 #include "../common/defaults.h"
 
 #include "camera.h"
+#include <CL/opencl.h>
 
 using namespace linearmath;
+
+enum class CLPlatformParams : short {
+  PROFILE = CL_PLATFORM_PROFILE,
+  VERSION = CL_PLATFORM_VERSION,
+  NAME = CL_PLATFORM_NAME,
+  VENDOR = CL_PLATFORM_VENDOR,
+  EXTENTION = CL_PLATFORM_EXTENSIONS
+};
+
+enum class CLDeviceType : unsigned int {
+  CPU = CL_DEVICE_TYPE_CPU,
+  GPU = CL_DEVICE_TYPE_GPU,
+  DEFAULT = CL_DEVICE_TYPE_DEFAULT,
+  ACCELERATOR = CL_DEVICE_TYPE_ACCELERATOR,
+  CUSTOM = CL_DEVICE_TYPE_CUSTOM,
+  ALL = CL_DEVICE_TYPE_ALL
+};
+
+void GetPlatformDevices(cl_platform_id platform, CLDeviceType filter) {
+
+   cl_device_id *devices = nullptr;
+   cl_uint num_devices = 0;
+
+    if (CL_SUCCESS != clGetDeviceIDs(platform, static_cast<cl_device_type>(filter),
+        0, devices, &num_devices)) {
+      return;
+    }
+    
+    //if (CL_SUCCESS != clGetDeviceIDs(platform, static_cast<cl_device_type>(filter),
+    //    value_size, value, &value_size_ret)) {
+    //  return std::string();
+    //}
+}
+
+std::string GetCLPlatfomParam(cl_platform_id platform, CLPlatformParams param) {
+  const cl_int value_size = 256;
+  size_t value_size_ret = 0;
+  char value[value_size];
+
+  if (CL_SUCCESS != clGetPlatformInfo(platform, static_cast<cl_platform_info>(param),
+      value_size, value, &value_size_ret)) {
+    return std::string();
+  }
+
+  value[++value_size_ret]='\0';
+  std::string result(value);
+  return result;
+}
+
+void RayTracer::Initialize() {
+  // Initialize OpenCL library
+
+  // 1) Get allowed platforms
+  // Let's assume 10 as the max platforms count
+  const cl_uint num_entries =10;
+  cl_uint platforms_count = 0;
+  cl_platform_id platform_id;
+
+  if (CL_SUCCESS != clGetPlatformIDs(num_entries, nullptr, &platforms_count)) {
+    return;
+  }
+
+  auto  platform_ids = (cl_platform_id*)malloc(sizeof(cl_platform_id)*platforms_count);
+
+  if (CL_SUCCESS != clGetPlatformIDs(num_entries, platform_ids, &platforms_count)) {
+    return;
+    free(platform_ids);
+  }
+  free(platform_ids);
+
+  // 2) Get allowed platforms info
+  for (int i=0; i<platforms_count; ++i) {
+    auto platform = platform_ids[i];
+    std::string info;
+
+    info += GetCLPlatfomParam(platform, CLPlatformParams::PROFILE);
+    info += GetCLPlatfomParam(platform, CLPlatformParams::VERSION);
+    info += GetCLPlatfomParam(platform, CLPlatformParams::NAME);
+    info += GetCLPlatfomParam(platform, CLPlatformParams::VENDOR);
+    info += GetCLPlatfomParam(platform, CLPlatformParams::EXTENTION) ;
+  }
+
+  // 3) Get devices ids of specified type for a platform
+  //for (const auto &platform : platform_ids) {
+  //  GetPlatformDevices(platform, CLDeviceType::ALL);
+  //}
+
+
+
+
+
+
+}
 
 RayTracer::RayTracer() : imgBuffer_(*new Imagemap(500,400)) {
   scene_ = nullptr;
   //cameraPos = {0.0f , 0.0f , 100.0f};
   cameraPos = {0.0f , 0.0f , 100.0f};
+  Initialize();
 }
 
 RayTracer::~RayTracer() {}
