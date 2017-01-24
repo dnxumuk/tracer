@@ -49,6 +49,7 @@ CviewerView::CviewerView() :
 }
 
 CviewerView::~CviewerView(){
+  int i = 0;
 }
 
 BOOL CviewerView::PreCreateWindow(CREATESTRUCT& cs) {
