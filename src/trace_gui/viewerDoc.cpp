@@ -49,7 +49,7 @@ CviewerDoc::CviewerDoc()
 
 CviewerDoc::~CviewerDoc()
 {
-	;
+  int i = 0;
 }
 
 BOOL CviewerDoc::OnNewDocument()
@@ -114,41 +114,41 @@ void CviewerDoc::OnFileOpen()
 	UpdateAllViews( nullptr );
 }
 void CviewerDoc::LoadScene() {
-  Scene* scene = new Scene();
+ // Scene* scene = new Scene();
 
-  scene->addShape(*new Sphere({0.f, 0.f, -10.f}, 2.f));
+ // scene->addShape(*new Sphere({0.f, 0.f, -10.f}, 2.f));
 
-  linearmath::vec3<float> points[] = {
-    { 10.0f, 10.0f, 0.0f},
-    { 0.0f, -5.0f, 5.0f},
-    {-10.0f, 10.0f, 5.0f}
-  };
-  //scene->addShape(*new
-  //   Face3(points)
-  //);
-  linearmath::vec3<float> points1[] = {
-    {70.0f, 10.0f, -60.0f},
-    {30.0f,-10.0f, 30.0f},
-    {-50.0f, 10.0f, -60.0f}
-  };
- // scene->addShape(*new
- //   Face3(points1)
- // );
+ // linearmath::vec3<float> points[] = {
+ //   { 10.0f, 10.0f, 0.0f},
+ //   { 0.0f, -5.0f, 5.0f},
+ //   {-10.0f, 10.0f, 5.0f}
+ // };
+ // //scene->addShape(*new
+ // //   Face3(points)
+ // //);
+ // linearmath::vec3<float> points1[] = {
+ //   {70.0f, 10.0f, -60.0f},
+ //   {30.0f,-10.0f, 30.0f},
+ //   {-50.0f, 10.0f, -60.0f}
+ // };
+ //// scene->addShape(*new
+ ////   Face3(points1)
+ //// );
 
-  //scene->addShape(*new Plane(linearmath::vec3<float>{ 0.f, 1.f, 0.0f}, -100.f));
-  scene->addShape(*new Sphere({  0.f, 5.f, 0.f}, 20.f));
-  scene->addShape(*new Sphere({ -4.f, 4.f , 2.f}, 2.f));
-  scene->addShape(*new Sphere({ 4.f, 4.f, 2.f }, 2.f));
+ // //scene->addShape(*new Plane(linearmath::vec3<float>{ 0.f, 1.f, 0.0f}, -100.f));
+ // scene->addShape(*new Sphere({  0.f, 5.f, 0.f}, 20.f));
+ // scene->addShape(*new Sphere({ -4.f, 4.f , 2.f}, 2.f));
+ // scene->addShape(*new Sphere({ 4.f, 4.f, 2.f }, 2.f));
 
-  Light* l1 = new Light();
-  l1->setPosition({0.f,5.f,50.f}, .1f);
-  scene->addLight(*l1);
+ // Light* l1 = new Light();
+ // l1->setPosition({0.f,5.f,50.f}, .1f);
+ // scene->addLight(*l1);
 
-  //AddPyramid(scene);
-	// Tracing
+ // //AddPyramid(scene);
+	//// Tracing
 
-	tracer->setScene(scene);
-	this->message = tracer->Run().c_str();
+	//tracer->setScene(scene);
+	//this->message = tracer->Run().c_str();
 }
 
 // CviewerDoc commands
