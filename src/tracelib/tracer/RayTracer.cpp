@@ -11,6 +11,8 @@
 
 //#define __NO_STD_VECTOR
 #include <iostream>
+#include <string>
+
 #include "camera.h"
 #include <CL/opencl.h>
 #include <CL/cl.hpp>
@@ -65,16 +67,15 @@ void RayTracer::Initialize() {
   /////////////////////////////////////////////////////////////////////////////
 
   // 5) Time to build executing kernel from sources is come
-  std::ifstream file("lesson1_kernels.cl");
+
+  std::ifstream file;
+  file.open("E:/sources/tracer/src/tracelib/cl_kernels/hellworld.cl", std::ifstream::in);
   checkErr(file.is_open() ? CL_SUCCESS : -1, "lesson1_kernel.cl");
 
-  std::string prg_sources; //std::string prog(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
-
-  auto pair_1 = prg_sources.c_str();
-  auto pair_2 = prg_sources.length() + 1;
-  auto argument = std::make_pair(prg_sources.c_str(), prg_sources.length() + 1);
-  //cl::Program::Sources source(std::make_pair( prog.c_str(), prog.length() + 1),1);
-  cl::Program::Sources source(1, argument);
+  std::string prg_sources(
+    (std::istreambuf_iterator<char>(file)),
+    (std::istreambuf_iterator<char>()));
+  cl::Program::Sources source(1, std::make_pair(prg_sources.c_str(), prg_sources.length() + 1));
 
   cl::Program program(context, source);
   err = program.build(devices, "");
@@ -85,6 +86,24 @@ void RayTracer::Initialize() {
   checkErr(err, "Kernel::Kernel()"); 
   err = kernel.setArg(0, outCL);
   checkErr(err, "Kernel::setArg()");
+
+  // 7) Create queue and execute our kernel
+  cl::CommandQueue queue(context, devices[0], 0, &err);
+  checkErr(err, "CommandQueue::CommandQueue()"); 
+  
+  cl::Event event;
+  err = queue.enqueueNDRangeKernel(
+    kernel, cl::NullRange, cl::NDRange(hw.length() + 1),
+    cl::NDRange(1, 1), NULL, &event);
+  checkErr(err, "ComamndQueue::enqueueNDRangeKernel()");
+
+  // 8) Wait for program finishing
+  event.wait();
+  err = queue.enqueueReadBuffer(outCL, CL_TRUE, 0, hw.length() + 1, outBuffer);
+  checkErr(err, "ComamndQueue::enqueueReadBuffer()");
+
+  MessageBox(NULL, "The program is saying ", outBuffer, MB_OK);
+  //return EXIT_SUCCESS;
 
 }
 

@@ -13,6 +13,9 @@
     <Filter Include="common">
       <UniqueIdentifier>{111e3a34-a6c0-4315-bb2d-5426364d2c7f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="cl_kernels">
+      <UniqueIdentifier>{0fa380da-12dc-4cc3-94e7-9bd75045bf23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="linearmath\_VectorTest.cpp">
@@ -125,5 +128,10 @@
     <ClInclude Include="tracer\camera.h">
       <Filter>tracer</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cl_kernels\hellworld.cl">
+      <Filter>cl_kernels</Filter>
+    </None>
   </ItemGroup>
 </Project>
