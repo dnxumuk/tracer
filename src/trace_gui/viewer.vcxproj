@@ -202,6 +202,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="viewer.h" />
     <ClInclude Include="viewerDoc.h" />
+    <ClInclude Include="ViewerOptions.h" />
     <ClInclude Include="viewerView.h" />
   </ItemGroup>
   <ItemGroup>
@@ -214,6 +215,7 @@
     </ClCompile>
     <ClCompile Include="viewer.cpp" />
     <ClCompile Include="viewerDoc.cpp" />
+    <ClCompile Include="ViewerOptions.cpp" />
     <ClCompile Include="viewerView.cpp" />
   </ItemGroup>
   <ItemGroup>

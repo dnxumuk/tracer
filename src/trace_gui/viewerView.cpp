@@ -17,6 +17,9 @@
 #include "..\tracelib\tracer\imagemap.h"
 #include "..\tracelib\linearmath\vector3d.h"
 #include "..\tracelib\linearmath\mat3x3.h"
+
+#include "ViewerOptions.h"
+
 #include <string>
 
 #ifdef _DEBUG
@@ -33,7 +36,8 @@ BEGIN_MESSAGE_MAP(CviewerView, CView)
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
-	ON_WM_KEYDOWN()
+  ON_COMMAND(ID_VIEW_OPTIONS, &CviewerView::OnOptions)
+  ON_WM_KEYDOWN()
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONDOWN()
   ON_WM_MOUSEWHEEL()
@@ -106,6 +110,11 @@ void CviewerView::OnDraw(CDC* /*pDC*/)
 }
 
 // CviewerView printing
+
+void CviewerView::OnOptions() {
+  CViewerOptions dlg;
+  dlg.DoModal();
+}
 
 BOOL CviewerView::OnPreparePrinting(CPrintInfo* pInfo)
 {

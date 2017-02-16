@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common\defaults.cpp" />
+    <ClCompile Include="common\RenderOptions.cpp" />
     <ClCompile Include="linearmath\main.cpp" />
     <ClCompile Include="linearmath\profiler.cpp" />
     <ClCompile Include="linearmath\_VectorTest.cpp" />
@@ -38,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\defaults.h" />
+    <ClInclude Include="common\RenderOptions.h" />
     <ClInclude Include="linearmath\fundamentalmath.h" />
     <ClInclude Include="linearmath\mat3x3.h" />
     <ClInclude Include="linearmath\profiler.h" />
