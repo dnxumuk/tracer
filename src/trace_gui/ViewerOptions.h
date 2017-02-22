@@ -1,6 +1,7 @@
 #pragma once
 #include "afxwin.h"
 #include "resource.h"5
+#include "afxcmn.h"
 
 
 class CViewerOptions :
@@ -17,7 +18,8 @@ protected:
 private:
   enum { IDD = IDD_DLG_VIEWER_OPTIONS };
   void OnPlatformSelect();
+  void InitListBox();
 public:
   CComboBox _platform_cbox;
-  CListBox _platform_info_lst;
+  CListCtrl _platform_info_list;
 };

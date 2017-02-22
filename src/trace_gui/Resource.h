@@ -9,8 +9,8 @@
 #define IDD_DLG_VIEWER_OPTIONS          310
 #define IDC_PLATFORM_GROUP              1001
 #define IDC_PLATFORMS_SEL               1002
-#define IDC_LIST2                       1004
 #define IDC_PLATFORM_INFO_LIST          1004
+#define IDC_LIST1                       1005
 #define ID_VIEW_OPTIONS                 32771
 
 // Next default values for new objects
@@ -19,7 +19,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        312
 #define _APS_NEXT_COMMAND_VALUE         32772
-#define _APS_NEXT_CONTROL_VALUE         1005
+#define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

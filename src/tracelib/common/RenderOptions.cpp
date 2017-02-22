@@ -1,8 +1,5 @@
 #include "RenderOptions.h"
-
-#include <CL/opencl.h>
 #include <CL/cl.hpp>
-
 #include <string>
 
 
@@ -27,7 +24,7 @@ void RenderOptions::GetPlatfomInfo(size_t id, std::map<std::string, std::string>
 
   if (id > platforms.size())
     return;
-  auto platform = platforms[id];
+  auto &platform = platforms[id];
 
   std::string value;
   platform.getInfo(CL_PLATFORM_PROFILE,&value);
@@ -63,8 +60,22 @@ void RenderOptions::GetDevices(int platform_id, PlatformSpec &spec) {
   platforms[platform_id].getDevices(CL_DEVICE_TYPE_CPU, &dev_cpu);
 
   std::vector<cl::Device> dev_gpu;
-  platforms[platform_id].getDevices(CL_DEVICE_TYPE_CPU, &dev_gpu);
+  platforms[platform_id].getDevices(CL_DEVICE_TYPE_GPU, &dev_gpu);
 
+  spec.reserve(dev_cpu.size() + dev_gpu.size());
+  
+  // Fill out the platform spec
+  
+  size_t dev_idx = 0;
+  for (const auto &cpu : dev_cpu) {
+    spec.emplace_back();
+    GetDeviceCPUInfo(cpu, spec[dev_idx++]);
+  }
+
+  for (const auto &gpu : dev_gpu) {
+    spec.emplace_back();
+    GetDeviceGPUInfo(gpu, spec[dev_idx++]);
+  }
 }
 
 
@@ -74,30 +85,40 @@ std::string RenderOptions::GetPlatformItemName(const std::string & name, const s
   return name + "(" + vendor + ")";
 }
 
-void RenderOptions::GetDeviceCPUInfo(cl::Device &dev, DeviceSpec &dic) {
-  // Header
-  dic["Type"] = "CPU";
-  //
+void RenderOptions::GetDeviceCommonInfo(const cl::Device & dev, DeviceSpec & dic) {
   cl_int bits;
   dev.getInfo(CL_DEVICE_ADDRESS_BITS, &bits);
-  dic["Bit"] = std::to_string(bits);
+  dic[L"Bit"] = std::to_wstring(bits);
 
   cl_int units;
   dev.getInfo(CL_DEVICE_MAX_COMPUTE_UNITS, &units);
-  dic["Cumpute units"] = std::to_string(units);
+  dic[L"Cumpute units"] = std::to_wstring(units);
 
-  cl_int streams;
+  size_t streams;
   dev.getInfo(CL_DEVICE_MAX_WORK_GROUP_SIZE, &streams);
-  dic["Cumpute streams"] = std::to_string(streams);
+  dic[L"Cumpute streams"] = std::to_wstring(streams);
 
   std::string name;
   dev.getInfo(CL_DEVICE_NAME, &name);
-  dic["Name"] = name;
+  dic[L"Name"] = std::wstring(name.cbegin(), name.cend());
 
   size_t frequency;
   dev.getInfo(CL_DEVICE_MAX_CLOCK_FREQUENCY, &frequency);
-  dic["Frequency"] = frequency;
+  dic[L"Frequency"] = std::to_wstring(frequency);
 
 
+  size_t simd_length;
+  dev.getInfo(CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT, &simd_length);
+  dic[L"SIMD float dimensions"] = std::to_wstring(simd_length);
 
+}
+
+void RenderOptions::GetDeviceCPUInfo(const cl::Device &dev, DeviceSpec &dic) {
+  GetDeviceCommonInfo(dev,dic);
+  dic[L"Type"] = L"CPU";
+}
+
+void RenderOptions::GetDeviceGPUInfo(const cl::Device &dev, DeviceSpec &dic) {
+  GetDeviceCommonInfo(dev, dic);
+  dic[L"Type"] = L"GPU";
 }

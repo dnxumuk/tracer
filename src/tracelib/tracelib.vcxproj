@@ -144,7 +144,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>$(OPEN_CL)\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OPEN_CL)include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRTDBG_MAP_ALLOC</PreprocessorDefinitions>
     </ClCompile>
     <Lib>
@@ -180,7 +180,7 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Strict</FloatingPointModel>
       <CallingConvention>Cdecl</CallingConvention>
-      <AdditionalIncludeDirectories>$(OPEN_CL)\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OPEN_CL)include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
