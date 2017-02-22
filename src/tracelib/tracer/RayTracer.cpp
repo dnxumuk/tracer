@@ -14,7 +14,7 @@
 #include <string>
 
 #include "camera.h"
-#include <CL/opencl.h>
+//#include <CL/opencl.h>
 #include <CL/cl.hpp>
 
 using namespace linearmath;
@@ -34,6 +34,7 @@ void checkErr(cl_int err, const char * name) {
 
 void RayTracer::Initialize() {
   // Initialize OpenCL library
+/*
   std::string hw("Hello Antony");
 
   // 1) Get platforms list
@@ -104,6 +105,7 @@ void RayTracer::Initialize() {
 
   MessageBox(NULL, "The program is saying ", outBuffer, MB_OK);
   //return EXIT_SUCCESS;
+*/
 
 }
 
@@ -275,4 +277,86 @@ bool RayTracer::findIntersections(const Ray & ray) {
     }
   }
   return intersectionFound;
+}
+
+void RayTracer::initCLPlatfrom(size_t platform_num) {
+	
+	cl_int err;
+
+	// 1) Obtain selected platform
+	std::vector<cl::Platform> platforms;
+	cl::Platform::get(&platforms);
+	checkErr( (platforms.size() != 0 && platform_num < platforms.size()) ? CL_SUCCESS : -1,
+	          "Can't obtain selected platform");
+
+	// 2) Create context in accordance with devices of obtained platform
+	std::vector<cl::Device> devices;
+	platforms[platform_num].getDevices(CL_DEVICE_TYPE_CPU, &devices);
+	checkErr( devices.size() != 0 ? CL_SUCCESS : -1,"Can't obtain devices from selected platform");
+
+	cl::Context context(devices);
+	checkErr(err, "Can't create context");
+
+	// 3) Allocate the host memory to be used by OpenCL kernel. Make a buffer from it
+	// For now let's assume that only 1 Mpix image to be used
+	const size_t width = 1000;
+	const size_t height = 1000;
+	const size_t channels = 3;
+
+	const size_t buf_size = width*height*channels;
+
+	char *picBuf = new char[buf_size + 1];
+	cl::Buffer outCL(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, buf_size + 1, picBuf, &err);
+	checkErr(err, "Can't create a buffer");
+
+	// 4) Query devices from the context
+	std::vector<cl::Device> devices;
+	devices = context.getInfo<CL_CONTEXT_DEVICES>();
+	checkErr(devices.size() > 0 ? CL_SUCCESS : -1, "The contex doesn't provide any devices");
+
+	// Now read the kernel file
+	std::ifstream programFile("kernels.cl");
+	std::string programString(
+		std::istreambuf_iterator<char>(programFile),
+		(std::istreambuf_iterator<char>()));
+	///////////////////////////////////////////////////////////////////////////////
+
+	//// 5) Time to build executing kernel from sources is come
+
+	//std::ifstream file;
+	//file.open("E:/sources/tracer/src/tracelib/cl_kernels/hellworld.cl", std::ifstream::in);
+	//checkErr(file.is_open() ? CL_SUCCESS : -1, "lesson1_kernel.cl");
+
+	//std::string prg_sources(
+	//	(std::istreambuf_iterator<char>(file)),
+	//	(std::istreambuf_iterator<char>()));
+	//cl::Program::Sources source(1, std::make_pair(prg_sources.c_str(), prg_sources.length() + 1));
+
+	//cl::Program program(context, source);
+	//err = program.build(devices, "");
+	//checkErr(err, "Program::build()");
+
+	//// 6)  Let's work with kernel
+	//cl::Kernel kernel(program, "hello", &err);
+	//checkErr(err, "Kernel::Kernel()");
+	//err = kernel.setArg(0, outCL);
+	//checkErr(err, "Kernel::setArg()");
+
+	//// 7) Create queue and execute our kernel
+	//cl::CommandQueue queue(context, devices[0], 0, &err);
+	//checkErr(err, "CommandQueue::CommandQueue()");
+
+	//cl::Event event;
+	//err = queue.enqueueNDRangeKernel(
+	//	kernel, cl::NullRange, cl::NDRange(hw.length() + 1),
+	//	cl::NDRange(1, 1), NULL, &event);
+	//checkErr(err, "ComamndQueue::enqueueNDRangeKernel()");
+
+	//// 8) Wait for program finishing
+	//event.wait();
+	//err = queue.enqueueReadBuffer(outCL, CL_TRUE, 0, hw.length() + 1, outBuffer);
+	//checkErr(err, "ComamndQueue::enqueueReadBuffer()");
+
+	//MessageBox(NULL, "The program is saying ", outBuffer, MB_OK);
+	//return EXIT_SUCCESS;
 }

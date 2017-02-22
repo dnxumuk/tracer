@@ -29,6 +29,8 @@ public:
   };
   linearmath::vec3<float> shader(const Ray &ray);
   bool findIntersections(const Ray &ray);
+
+  void initCLPlatfrom(size_t platform_num);
 public:
   linearmath::vec3<float>  cameraPos;
   linearmath::vec3<float>  cameraLookAt;

@@ -102,12 +102,12 @@ void RenderOptions::GetDeviceCommonInfo(const cl::Device & dev, DeviceSpec & dic
   dev.getInfo(CL_DEVICE_NAME, &name);
   dic[L"Name"] = std::wstring(name.cbegin(), name.cend());
 
-  size_t frequency;
+  int frequency;
   dev.getInfo(CL_DEVICE_MAX_CLOCK_FREQUENCY, &frequency);
   dic[L"Frequency"] = std::to_wstring(frequency);
 
 
-  size_t simd_length;
+  int simd_length;
   dev.getInfo(CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT, &simd_length);
   dic[L"SIMD float dimensions"] = std::to_wstring(simd_length);
 
