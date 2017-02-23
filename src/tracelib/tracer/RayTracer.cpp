@@ -33,6 +33,7 @@ void checkErr(cl_int err, const char * name) {
 }
 
 void RayTracer::Initialize() {
+	//initCLPlatfrom(0);
   // Initialize OpenCL library
 /*
   std::string hw("Hello Antony");
@@ -109,7 +110,7 @@ void RayTracer::Initialize() {
 
 }
 
-RayTracer::RayTracer() : imgBuffer_(*new Imagemap(500,400)) {
+RayTracer::RayTracer() : imgBuffer_(*new Imagemap(500,500)) {
   scene_ = nullptr;
   //cameraPos = {0.0f , 0.0f , 100.0f};
   cameraPos = {0.0f , 0.0f , 100.0f};
@@ -131,10 +132,18 @@ inline float clamp(float val, float low, float high) {
 }
 
 std::string RayTracer::Run() {
-  if (!scene_)
-    return string();
+  //if (!scene_)
+  //  return string();
   imgBuffer_.reset();
-
+  initCLPlatfrom(0, imgBuffer_.getData());
+  return string();
+/*/
+  for (int i = 0; i < 100; ++i)
+	  for (int j = 0; j < 100; ++j)
+			imgBuffer_.getData()[3*(i*99 + j)] = i;
+  return string();
+  */
+/*
   // Create camera via setting up position and direction
   Camera camera;
   camera.setResolution(500,400);
@@ -198,6 +207,7 @@ std::string RayTracer::Run() {
   prf.finish();
   render_time_ = prf.getFPS();
   return prf.getResults();
+*/
 }
 
 vec3<float> RayTracer::Trace(const Ray &ray, float distanse) {
@@ -279,13 +289,13 @@ bool RayTracer::findIntersections(const Ray & ray) {
   return intersectionFound;
 }
 
-void RayTracer::initCLPlatfrom(size_t platform_num) {
+void RayTracer::initCLPlatfrom(size_t platform_num, unsigned char *img) {
 	
 	cl_int err;
 
 	// 1) Obtain selected platform
 	std::vector<cl::Platform> platforms;
-	cl::Platform::get(&platforms);
+	err = cl::Platform::get(&platforms);
 	checkErr( (platforms.size() != 0 && platform_num < platforms.size()) ? CL_SUCCESS : -1,
 	          "Can't obtain selected platform");
 
@@ -299,25 +309,24 @@ void RayTracer::initCLPlatfrom(size_t platform_num) {
 
 	// 3) Allocate the host memory to be used by OpenCL kernel. Make a buffer from it
 	// For now let's assume that only 1 Mpix image to be used
-	const size_t width = 1000;
-	const size_t height = 1000;
+	const size_t width = 500;
+	const size_t height = 500;
 	const size_t channels = 3;
 
 	const size_t buf_size = width*height*channels;
 
-	char *picBuf = new char[buf_size + 1];
+	unsigned char *picBuf = img;//new char[buf_size + 1];
 	cl::Buffer outCL(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, buf_size + 1, picBuf, &err);
 	checkErr(err, "Can't create a buffer");
 
 	// 4) Query devices from the context
-	std::vector<cl::Device> devices;
 	devices = context.getInfo<CL_CONTEXT_DEVICES>();
 	checkErr(devices.size() > 0 ? CL_SUCCESS : -1, "The contex doesn't provide any devices");
 
 	// Now read the kernel file
   // TODO : Producing the binaries of a kernel should be moved to a singlenton.
 
-  std::ifstream program_file("..cl_kernel\helloworld.cl");
+  std::ifstream program_file("C:\\Users\\Anton\\Desktop\\tracer\\tracer\\src\\tracelib\\cl_kernels\\hellworld.cl");
   std::string program_src(
     std::istreambuf_iterator<char>(program_file),
    (std::istreambuf_iterator<char>()));
@@ -328,35 +337,28 @@ void RayTracer::initCLPlatfrom(size_t platform_num) {
    cl::Program program(context,src);
    program.build(devices);
 
-   cl::Kernel krnl_draw_circle(program,"draw_circle");
+	std::string x = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(devices[0]);
+	::MessageBoxA(NULL, x.c_str(), "Build result", MB_OK);
+
+   cl::Kernel krnl_draw_circle(program,"hello");
 
    // Set arguments
    krnl_draw_circle.setArg(0, outCL);
 
    //Enqueue kernel to all workgroups and CU ( compute units )
-   size_t work_dims ;
-   size_t global_work_offset;
-   size_t global_work_size;
-   size_t local_work_size;
-   cl::CommandQueue::enqueueNDRangeKernel();
+   cl::CommandQueue queue(context, devices[0]);
 
-   //
-	//// 6)  Let's work with kernel
-	//cl::Kernel kernel(program, "hello", &err);
-	//checkErr(err, "Kernel::Kernel()");
-	//err = kernel.setArg(0, outCL);
-	//checkErr(err, "Kernel::setArg()");
+   size_t max_work_dim = 0;
+   devices[0].getInfo(CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, &max_work_dim);
+   size_t work_dims = 2; // Corresponds to the CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS.
+   
+   cl::Event frame_is_done;
+   cl::NDRange offset(0, 0), work_size(width, height);
+	queue.enqueueNDRangeKernel(krnl_draw_circle, offset, work_size, cl::NullRange, nullptr, &frame_is_done);
+   frame_is_done.wait();
 
-	//// 7) Create queue and execute our kernel
-	//cl::CommandQueue queue(context, devices[0], 0, &err);
-	//checkErr(err, "CommandQueue::CommandQueue()");
-
-	//cl::Event event;
-	//err = queue.enqueueNDRangeKernel(
-	//	kernel, cl::NullRange, cl::NDRange(hw.length() + 1),
-	//	cl::NDRange(1, 1), NULL, &event);
-	//checkErr(err, "ComamndQueue::enqueueNDRangeKernel()");
-
+   queue.enqueueReadBuffer(outCL, CL_TRUE, 0, buf_size, picBuf);
+   //delete[] picBuf;
 	//// 8) Wait for program finishing
 	//event.wait();
 	//err = queue.enqueueReadBuffer(outCL, CL_TRUE, 0, hw.length() + 1, outBuffer);

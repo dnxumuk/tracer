@@ -19,5 +19,5 @@ Imagemap::~Imagemap() {
 
 void Imagemap::reset() {
   const int value = 0;
-  memset(imgData_, value, (width_*height_*bitsPerPixel) / sizeof(value));
+  memset(imgData_, value, width_*height_*bitsPerPixel );
 }

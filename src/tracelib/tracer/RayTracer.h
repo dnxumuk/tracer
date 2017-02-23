@@ -22,7 +22,7 @@ public:
     return scene_->getLight(0)->getCenter();
   }
   void setLight(const linearmath::vec3<float> &newLight) {
-    scene_->getLight(0)->setPosition(newLight, 0.5f); 
+    //scene_->getLight(0)->setPosition(newLight, 0.5f); 
   }
   void refresh() { 
     message = Run();
@@ -30,7 +30,7 @@ public:
   linearmath::vec3<float> shader(const Ray &ray);
   bool findIntersections(const Ray &ray);
 
-  void initCLPlatfrom(size_t platform_num);
+  void initCLPlatfrom(size_t platform_num, unsigned char *img);
 public:
   linearmath::vec3<float>  cameraPos;
   linearmath::vec3<float>  cameraLookAt;

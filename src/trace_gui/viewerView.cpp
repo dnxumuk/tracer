@@ -163,7 +163,7 @@ void CviewerView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
-	linearmath::vec3<float> light = pDoc->tracer->getLight();
+	linearmath::vec3<float> light; //= pDoc->tracer->getLight();
 	switch ( nChar )
 	{
 	case 'W':
