@@ -315,27 +315,32 @@ void RayTracer::initCLPlatfrom(size_t platform_num) {
 	checkErr(devices.size() > 0 ? CL_SUCCESS : -1, "The contex doesn't provide any devices");
 
 	// Now read the kernel file
-	std::ifstream programFile("kernels.cl");
-	std::string programString(
-		std::istreambuf_iterator<char>(programFile),
-		(std::istreambuf_iterator<char>()));
-	///////////////////////////////////////////////////////////////////////////////
+  // TODO : Producing the binaries of a kernel should be moved to a singlenton.
 
-	//// 5) Time to build executing kernel from sources is come
+  std::ifstream program_file("..cl_kernel\helloworld.cl");
+  std::string program_src(
+    std::istreambuf_iterator<char>(program_file),
+   (std::istreambuf_iterator<char>()));
 
-	//std::ifstream file;
-	//file.open("E:/sources/tracer/src/tracelib/cl_kernels/hellworld.cl", std::ifstream::in);
-	//checkErr(file.is_open() ? CL_SUCCESS : -1, "lesson1_kernel.cl");
+   // Compile kernel
+   cl::Program::Sources src(1, std::make_pair(program_src.c_str(), program_src.length()+1));
+   
+   cl::Program program(context,src);
+   program.build(devices);
 
-	//std::string prg_sources(
-	//	(std::istreambuf_iterator<char>(file)),
-	//	(std::istreambuf_iterator<char>()));
-	//cl::Program::Sources source(1, std::make_pair(prg_sources.c_str(), prg_sources.length() + 1));
+   cl::Kernel krnl_draw_circle(program,"draw_circle");
 
-	//cl::Program program(context, source);
-	//err = program.build(devices, "");
-	//checkErr(err, "Program::build()");
+   // Set arguments
+   krnl_draw_circle.setArg(0, outCL);
 
+   //Enqueue kernel to all workgroups and CU ( compute units )
+   size_t work_dims ;
+   size_t global_work_offset;
+   size_t global_work_size;
+   size_t local_work_size;
+   cl::CommandQueue::enqueueNDRangeKernel();
+
+   //
 	//// 6)  Let's work with kernel
 	//cl::Kernel kernel(program, "hello", &err);
 	//checkErr(err, "Kernel::Kernel()");
