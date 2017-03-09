@@ -137,5 +137,8 @@
     <None Include="cl_kernels\hellworld.cl">
       <Filter>cl_kernels</Filter>
     </None>
+    <None Include="cl_kernels\logic.cl">
+      <Filter>cl_kernels</Filter>
+    </None>
   </ItemGroup>
 </Project>

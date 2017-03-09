@@ -34,81 +34,6 @@ void checkErr(cl_int err, const char * name) {
 }
 
 void RayTracer::Initialize() {
-	//initCLPlatfrom(0);
-  // Initialize OpenCL library
-/*
-  std::string hw("Hello Antony");
-
-  // 1) Get platforms list
-  cl_int err;
-  std::vector< cl::Platform > platformList;
-  cl::Platform::get(&platformList);
-  checkErr(platformList.size() != 0 ? CL_SUCCESS : -1, "cl::Platform::get");
-  std::cerr << "Platform number is: " << platformList.size() << std::endl; std::string platformVendor;
-
-  platformList[0].getInfo((cl_platform_info)CL_PLATFORM_VENDOR, &platformVendor);
-  std::cerr << "Platform is by: " << platformVendor << "\n";
-
-  // 2) Create context
-  cl_context_properties cprops[3] = { 
-    CL_CONTEXT_PLATFORM, (cl_context_properties)(platformList[0])(), 0 
-  }; 
-  cl::Context context(CL_DEVICE_TYPE_CPU, cprops, NULL, NULL, &err);
-  checkErr(err, "Context::Context()");
-
-  // 3) Allocate the host memory to be used by OpenCL kernel
-  char * outBuffer = new char[hw.length() + 1];
-  cl::Buffer outCL(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, hw.length() + 1, outBuffer, &err);
-  checkErr(err, "Buffer::Buffer()");
-
-  // 4) Query devices from the context
-  std::vector<cl::Device> devices;
-  devices = context.getInfo<CL_CONTEXT_DEVICES>();
-  std::cerr << "Selected context has " << devices.size() << " devices" << std::endl;
-  checkErr(devices.size() > 0 ? CL_SUCCESS : -1, "devices.size() > 0");
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  // 5) Time to build executing kernel from sources is come
-
-  std::ifstream file;
-  file.open("E:/sources/tracer/src/tracelib/cl_kernels/hellworld.cl", std::ifstream::in);
-  checkErr(file.is_open() ? CL_SUCCESS : -1, "lesson1_kernel.cl");
-
-  std::string prg_sources(
-    (std::istreambuf_iterator<char>(file)),
-    (std::istreambuf_iterator<char>()));
-  cl::Program::Sources source(1, std::make_pair(prg_sources.c_str(), prg_sources.length() + 1));
-
-  cl::Program program(context, source);
-  err = program.build(devices, "");
-  checkErr(err, "Program::build()");
-
-  // 6)  Let's work with kernel
-  cl::Kernel kernel(program, "hello", &err);
-  checkErr(err, "Kernel::Kernel()"); 
-  err = kernel.setArg(0, outCL);
-  checkErr(err, "Kernel::setArg()");
-
-  // 7) Create queue and execute our kernel
-  cl::CommandQueue queue(context, devices[0], 0, &err);
-  checkErr(err, "CommandQueue::CommandQueue()"); 
-  
-  cl::Event event;
-  err = queue.enqueueNDRangeKernel(
-    kernel, cl::NullRange, cl::NDRange(hw.length() + 1),
-    cl::NDRange(1, 1), NULL, &event);
-  checkErr(err, "ComamndQueue::enqueueNDRangeKernel()");
-
-  // 8) Wait for program finishing
-  event.wait();
-  err = queue.enqueueReadBuffer(outCL, CL_TRUE, 0, hw.length() + 1, outBuffer);
-  checkErr(err, "ComamndQueue::enqueueReadBuffer()");
-
-  MessageBox(NULL, "The program is saying ", outBuffer, MB_OK);
-  //return EXIT_SUCCESS;
-*/
-
 }
 
 RayTracer::RayTracer() : imgBuffer_(*new Imagemap(500,500)) {
@@ -138,12 +63,7 @@ std::string RayTracer::Run() {
   imgBuffer_.reset();
   initCLPlatfrom(0, imgBuffer_.getData());
   return string();
-/*/
-  for (int i = 0; i < 100; ++i)
-	  for (int j = 0; j < 100; ++j)
-			imgBuffer_.getData()[3*(i*99 + j)] = i;
-  return string();
-  */
+
 /*
   // Create camera via setting up position and direction
   Camera camera;
@@ -324,13 +244,13 @@ void RayTracer::initCLPlatfrom(size_t platform_num, unsigned char *img) {
 	devices = context.getInfo<CL_CONTEXT_DEVICES>();
 	checkErr(devices.size() > 0 ? CL_SUCCESS : -1, "The contex doesn't provide any devices");
 
-  KernelKeeper::setPath("E:\\sources\\tracer\\src\\tracelib\\cl_kernels\\hellworld.cl");
-  KernelKeeper::setContext(context);
-  KernelKeeper::setDevices(devices);
+    auto keeper = KernelKeeper::getInstance();
+    keeper.addKernelToList("hello",L"C:\\Users\\Anton\\Desktop\\tracer\\tracer\\src\\tracelib\\cl_kernels\\hellworld.cl", devices, context);
+    //keeper.addKernelToList(L"E:\\sources\\tracer\\src\\tracelib\\cl_kernels\\hellworld.cl");
+    auto krnl_draw_circle = keeper.buildKernel("hello");
 
-  cl::Kernel krnl_draw_circle = KernelKeeper::buildKernel();
-   // Set arguments
-   krnl_draw_circle.setArg(0, outCL);
+    // Set arguments
+    krnl_draw_circle.setArg(0, outCL);
 
    //Enqueue kernel to all workgroups and CU ( compute units )
    cl::CommandQueue queue(context, devices[0]);
@@ -341,16 +261,8 @@ void RayTracer::initCLPlatfrom(size_t platform_num, unsigned char *img) {
    
    cl::Event frame_is_done;
    cl::NDRange offset(0, 0), work_size(width, height);
-	queue.enqueueNDRangeKernel(krnl_draw_circle, offset, work_size, cl::NullRange, nullptr, &frame_is_done);
+   queue.enqueueNDRangeKernel(krnl_draw_circle, offset, work_size, cl::NullRange, nullptr, &frame_is_done);
    frame_is_done.wait();
 
    queue.enqueueReadBuffer(outCL, CL_TRUE, 0, buf_size, picBuf);
-   //delete[] picBuf;
-	//// 8) Wait for program finishing
-	//event.wait();
-	//err = queue.enqueueReadBuffer(outCL, CL_TRUE, 0, hw.length() + 1, outBuffer);
-	//checkErr(err, "ComamndQueue::enqueueReadBuffer()");
-
-	//MessageBox(NULL, "The program is saying ", outBuffer, MB_OK);
-	//return EXIT_SUCCESS;
 }

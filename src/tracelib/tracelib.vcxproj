@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cl_kernels\hellworld.cl" />
+    <None Include="cl_kernels\logic.cl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A76EE6BE-B1D3-4303-993B-2D22DD8D19B3}</ProjectGuid>

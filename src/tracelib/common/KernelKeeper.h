@@ -1,36 +1,44 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <map>
 #include <CL/cl.hpp>
-//
-//namespace cl {
-//  class Device;
-//  class Context;
-//  class Kernel;
-//  class Context;
-//  class Program;
-//}
+
+struct KernelContext {
+public:
+    KernelContext();
+    KernelContext(const std::wstring &path, const std::vector<cl::Device> &devices, const cl::Context &context);
+
+    cl::Kernel getKernel() const;
+    std::wstring getPath() const;
+
+    void setPath(const std::wstring &path);
+    void setRelatedDevices(const std::vector<cl::Device> &devices);
+    void setRelatedContext(const cl::Context &context);
+
+    cl::Kernel build(const std::string &krnl_name);
+private:
+    cl::Kernel built_kernel_;
+
+    std::wstring krnl_src_path_;
+    std::vector<cl::Device> krnl_devices_;
+    cl::Context krnl_context_;
+    cl::Program prg_;
+    bool is_rebuild_needed;
+};
 
 class KernelKeeper {
 public:
   static KernelKeeper & getInstance();
-  
-  static void setPath(const std::string &path);
-  static void setDevices(const std::vector<cl::Device> &devices);
-  static void setContext(const cl::Context &context);
-  static cl::Kernel buildKernel();
-  static cl::Kernel getKernel();
+  void addKernelToList(const std::string &kernel_name, const std::wstring &path, const std::vector<cl::Device> &devices, const cl::Context &context);
+  cl::Kernel getKernel(const std::string &name);
+  cl::Kernel buildKernel(const std::string &name);
   ~KernelKeeper();
 
 private:
   static KernelKeeper _instance;
   KernelKeeper();
-
-  static std::string kernel_path_;
-  static std::vector<cl::Device> devices_;
-  static cl::Context context_;
-  static cl::Program prg_;
-
-  static bool is_rebuild_needed_;
+  std::map<std::string, KernelContext> kernels_;
+  cl::Kernel buildKernel();
 };
 
