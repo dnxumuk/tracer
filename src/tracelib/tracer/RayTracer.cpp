@@ -4,6 +4,7 @@
 #include "rayintersection.h"
 #include <algorithm>
 #include "../common/defaults.h"
+#include "../common/KernelKeeper.h"
 
 #ifdef _WIN64
 #include "Windows.h"
@@ -323,25 +324,11 @@ void RayTracer::initCLPlatfrom(size_t platform_num, unsigned char *img) {
 	devices = context.getInfo<CL_CONTEXT_DEVICES>();
 	checkErr(devices.size() > 0 ? CL_SUCCESS : -1, "The contex doesn't provide any devices");
 
-	// Now read the kernel file
-  // TODO : Producing the binaries of a kernel should be moved to a singlenton.
+  KernelKeeper::setPath("E:\\sources\\tracer\\src\\tracelib\\cl_kernels\\hellworld.cl");
+  KernelKeeper::setContext(context);
+  KernelKeeper::setDevices(devices);
 
-  std::ifstream program_file("C:\\Users\\Anton\\Desktop\\tracer\\tracer\\src\\tracelib\\cl_kernels\\hellworld.cl");
-  std::string program_src(
-    std::istreambuf_iterator<char>(program_file),
-   (std::istreambuf_iterator<char>()));
-
-   // Compile kernel
-   cl::Program::Sources src(1, std::make_pair(program_src.c_str(), program_src.length()+1));
-   
-   cl::Program program(context,src);
-   program.build(devices);
-
-	std::string x = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(devices[0]);
-	::MessageBoxA(NULL, x.c_str(), "Build result", MB_OK);
-
-   cl::Kernel krnl_draw_circle(program,"hello");
-
+  cl::Kernel krnl_draw_circle = KernelKeeper::buildKernel();
    // Set arguments
    krnl_draw_circle.setArg(0, outCL);
 

@@ -67,6 +67,7 @@
       <Filter>tracer</Filter>
     </ClCompile>
     <ClCompile Include="common\RenderOptions.cpp" />
+    <ClCompile Include="common\KernelKeeper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="linearmath\_VectorTest.h">
@@ -130,6 +131,7 @@
       <Filter>tracer</Filter>
     </ClInclude>
     <ClInclude Include="common\RenderOptions.h" />
+    <ClInclude Include="common\KernelKeeper.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cl_kernels\hellworld.cl">

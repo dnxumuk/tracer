@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common\defaults.cpp" />
+    <ClCompile Include="common\KernelKeeper.cpp" />
     <ClCompile Include="common\RenderOptions.cpp" />
     <ClCompile Include="linearmath\main.cpp" />
     <ClCompile Include="linearmath\profiler.cpp" />
@@ -39,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\defaults.h" />
+    <ClInclude Include="common\KernelKeeper.h" />
     <ClInclude Include="common\RenderOptions.h" />
     <ClInclude Include="linearmath\fundamentalmath.h" />
     <ClInclude Include="linearmath\mat3x3.h" />
