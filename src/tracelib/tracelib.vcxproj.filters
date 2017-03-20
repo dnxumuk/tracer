@@ -132,6 +132,9 @@
     </ClInclude>
     <ClInclude Include="common\RenderOptions.h" />
     <ClInclude Include="common\KernelKeeper.h" />
+    <ClInclude Include="cl_kernels\logic_kernel_attendant.h">
+      <Filter>cl_kernels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cl_kernels\hellworld.cl">

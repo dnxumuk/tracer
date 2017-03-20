@@ -7,27 +7,40 @@ struct Ray {
   float3 dir;
 };
 
-__kernel void logic(__global uchar * out) {
+struct _ScreenParameters {
+    uint frame_width;
+    uint frame_height;
+
+    float screen_coord_origin[3];
+    float camera_origin[3];
+    //
+    float width_dir[3];
+    float height_dir[3];
+
+    // Real world coodinates per pixel
+    float width_ratio;
+    float height_ratio;
+};
+
+typedef struct _ScreenParameters ScreenParameters;
+
+
+
+__kernel void logic(__global uchar * out, __global ScreenParameters *param) {
 	// Need to be passed via params
-	float3 origin_ = { 0.0, 0.0, 10.0 };
-	float3 scr_origin = { 0.0, 0.0, 0.0 };
-	// 
-	float scr_w = 1 / 10.0;
-	float scr_h = 1 /10.0;
-
-	float3 u_dir = { 1.0 ,0.0, 0.0};
-	float3 v_dir = { 0.0 ,1.0 ,0.0};
-
-	float pic_width = 500;
-	float pic_height = 500;
-
-	float x = get_global_id(0) / pic_width;
-	float y = get_global_id(1) / pic_height;
+	float x = get_global_id(0) / param->frame_width;
+	float y = get_global_id(1) / param->frame_height;
 
 	Ray ray;
-	ray.origin = origin_;
-	float3 scr_pixel = scr_origin - u_dir * scr_w * pic_width - v_dir * scr_h * pic_height;
-	ray.dir = (scr_pixel - origin_).normilize;
+	ray.origin = param->screen_coord_origin;
+	float3 scr_pixel = screen_coord_origin - (param->width_dir * width_ratio * x) - (param->height_dir * height_ratio * y);
+	ray.dir = normalize(scr_pixel - param->camera_origin);
 
 	out[get_global_id(0)] = ray;
+	// Also provide additional info. Let's use coloring as an angle between a ray and the axis from camera origin to world coordinates origin
+	// The most little angle is the most staurated color thus 90 degree angle corresponds the black color
+	float3 the_axis = normalize(param->camera_origin);
+	float cosin = dot(the_axis, ray.dir);
+	uint shift = 3*(get_global_id(1) * param->frame_width + get_global_id(0));
+	out[shift] = cosin;
 }

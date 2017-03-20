@@ -245,9 +245,9 @@ void RayTracer::initCLPlatfrom(size_t platform_num, unsigned char *img) {
 	checkErr(devices.size() > 0 ? CL_SUCCESS : -1, "The contex doesn't provide any devices");
 
     auto keeper = KernelKeeper::getInstance();
-    keeper.addKernelToList("hello",L"C:\\Users\\Anton\\Desktop\\tracer\\tracer\\src\\tracelib\\cl_kernels\\hellworld.cl", devices, context);
+    keeper.addKernelToList("logic",L"C:\\Users\\Anton\\Desktop\\tracer\\tracer\\src\\tracelib\\cl_kernels\\logic.cl", devices, context);
     //keeper.addKernelToList(L"E:\\sources\\tracer\\src\\tracelib\\cl_kernels\\hellworld.cl");
-    auto krnl_draw_circle = keeper.buildKernel("hello");
+    auto krnl_draw_circle = keeper.buildKernel("logic");
 
     // Set arguments
     krnl_draw_circle.setArg(0, outCL);
