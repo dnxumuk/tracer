@@ -16,6 +16,24 @@ cl::Kernel KernelKeeper::getKernel(const std::string &name) {
       throw "Kernel has not been found";
 }
 
+cl::Context KernelKeeper::getContext(const std::string & name)
+{
+    auto result = kernels_.find(name);
+    if (result != kernels_.cend())
+        return result->second.getContext();
+    else
+        throw "Kernel has not been found";
+}
+
+std::vector<cl::Device> KernelKeeper::getDevices(const std::string & name)
+{
+    auto result = kernels_.find(name);
+    if (result == kernels_.cend())
+        throw "Kernel has not been found";
+
+    return result->second.getDevices();
+}
+
 cl::Kernel KernelKeeper::buildKernel(const std::string &name) {
   auto result = kernels_.find(name);
   if (result == kernels_.cend())
@@ -57,6 +75,10 @@ cl::Kernel KernelContext::getKernel() const {
     return built_kernel_;
 }
 
+cl::Context KernelContext::getContext() const {
+    return krnl_context_;
+}
+
 void KernelContext::setPath(const std::wstring &path) {
     krnl_src_path_ = path;
     is_rebuild_needed = true;
@@ -64,6 +86,10 @@ void KernelContext::setPath(const std::wstring &path) {
 
 std::wstring KernelContext::getPath() const {
     return krnl_src_path_;
+}
+
+std::vector<cl::Device> KernelContext::getDevices() const {
+    return krnl_devices_;
 }
 
 void KernelContext::setRelatedDevices(const std::vector<cl::Device> &devices) {

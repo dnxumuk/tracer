@@ -10,7 +10,9 @@ public:
     KernelContext(const std::wstring &path, const std::vector<cl::Device> &devices, const cl::Context &context);
 
     cl::Kernel getKernel() const;
+    cl::Context getContext() const;
     std::wstring getPath() const;
+    std::vector<cl::Device> getDevices() const;
 
     void setPath(const std::wstring &path);
     void setRelatedDevices(const std::vector<cl::Device> &devices);
@@ -32,6 +34,8 @@ public:
   static KernelKeeper & getInstance();
   void addKernelToList(const std::string &kernel_name, const std::wstring &path, const std::vector<cl::Device> &devices, const cl::Context &context);
   cl::Kernel getKernel(const std::string &name);
+  cl::Context getContext(const std::string &name);
+  std::vector<cl::Device> getDevices(const std::string &name);
   cl::Kernel buildKernel(const std::string &name);
   ~KernelKeeper();
 

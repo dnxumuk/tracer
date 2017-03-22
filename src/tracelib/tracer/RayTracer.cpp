@@ -6,6 +6,9 @@
 #include "../common/defaults.h"
 #include "../common/KernelKeeper.h"
 
+#include "../cl_kernels/logic_kernel_attendant.h"
+#include "../common/KernelKeeper.h"
+
 #ifdef _WIN64
 #include "Windows.h"
 #endif
@@ -41,6 +44,7 @@ RayTracer::RayTracer() : imgBuffer_(*new Imagemap(500,500)) {
   //cameraPos = {0.0f , 0.0f , 100.0f};
   cameraPos = {0.0f , 0.0f , 100.0f};
   Initialize();
+  initCLPlatfrom();
 }
 
 RayTracer::~RayTracer() {
@@ -60,20 +64,79 @@ inline float clamp(float val, float low, float high) {
 std::string RayTracer::Run() {
   //if (!scene_)
   //  return string();
-  imgBuffer_.reset();
-  initCLPlatfrom(0, imgBuffer_.getData());
-  return string();
 
-/*
+  imgBuffer_.reset();
+
   // Create camera via setting up position and direction
   Camera camera;
-  camera.setResolution(500,400);
+  camera.setResolution(500,500);
   camera.setPosition({0.0f,0.0f,100.0f}, {0.0f,0.0f,-1.0f});
   camera.setRotation(0.0f);
   camera.setCameraToScreenDistance(4.0);
-  camera.setFOVDegrees(60.0f);
+  camera.setFOVDegrees(120.0f);
   camera.setAspect(1.0f);
 
+  // Create OpenCL structure to pass camera settings to the kernel
+  ScreenParameters params;
+  params.frame_width = camera.getResolution().first;
+  params.frame_height = camera.getResolution().second;
+
+  auto tmp_u = camera.scr_u_dir_;
+  auto tmp_v = camera.scr_v_dir_;
+
+  params.width_dir[0] = tmp_u.x;
+  params.width_dir[1] = tmp_u.y;
+  params.width_dir[2] = tmp_u.z;
+
+  params.height_dir[0] = tmp_v.x;
+  params.height_dir[1] = tmp_v.y;
+  params.height_dir[2] = tmp_v.z;
+  
+  params.width_ratio = camera.getDxDY().first;
+  params.height_ratio = camera.getDxDY().second;
+
+  params.screen_coord_origin[0] = camera.scr_origin_.x;
+  params.screen_coord_origin[1] = camera.scr_origin_.y;
+  params.screen_coord_origin[2] = camera.scr_origin_.z;
+
+  params.camera_origin[0] = camera.getPosition().x;
+  params.camera_origin[1] = camera.getPosition().y;
+  params.camera_origin[2] = camera.getPosition().z;
+
+  // Obtain OpenCL kernel 
+  auto kernel = KernelKeeper::getInstance().getKernel("logic");
+  auto context = KernelKeeper::getInstance().getContext("logic");
+  auto devices = KernelKeeper::getInstance().getDevices("logic");
+
+  // Create 2 buffers. The first one is the rays storage and the other is the buffer made up from image
+  cl_int err;
+  std::vector<cl_ray> rays( camera.getResolution().first * camera.getResolution().first);
+
+  cl::Buffer param_buf(context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sizeof(ScreenParameters), &params, &err);
+
+  cl::Buffer rays_buffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, sizeof(cl_ray) * rays.size(), rays.data(), &err);
+  cl::Buffer frame_buffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, imgBuffer_.height() * imgBuffer_.width()*3*sizeof(float), imgBuffer_.getData(), &err);
+  checkErr(err, "Can't create a buffer");
+
+  kernel.setArg(0, frame_buffer);
+  kernel.setArg(1, param_buf);
+
+
+  //Enqueue kernel to all workgroups
+  cl::CommandQueue queue(context, devices[0]);
+
+  size_t max_work_dim = 0;
+  devices[0].getInfo(CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, &max_work_dim);
+  size_t work_dims = 2; // Corresponds to the CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS.
+  
+  cl::Event frame_is_done;
+  cl::NDRange offset(0, 0), work_size(imgBuffer_.width(), imgBuffer_.height());
+  queue.enqueueNDRangeKernel(kernel, offset, work_size, cl::NullRange, nullptr, &frame_is_done);
+  frame_is_done.wait();
+
+  queue.enqueueReadBuffer(frame_buffer, CL_TRUE, 0, imgBuffer_.height() * imgBuffer_.width() * 3 * sizeof(unsigned char), imgBuffer_.getData());
+
+/*
   const auto size   = camera.getResolution();
   const auto width  = size.first;
   const auto height = size.second;
@@ -85,18 +148,19 @@ std::string RayTracer::Run() {
 
   //
   std::string msgResults;
+*/
   std::string msgHeader = "Rendering image of " + 
-    std::to_string(width * height / (float)1'000'000) + " Mpx";
+    std::to_string(imgBuffer_.width() * imgBuffer_.height() / 1'000'000.0) + " Mpx";
   Profiler prf(msgHeader, true);
 
   prf.start();
-  const float  min = -1.0f * cameraDist;
+ // const float  min = -1.0f * cameraDist;
   //const float  max =  1.0f * cameraDist;
   //float aspect = width / static_cast<float>(height);
 
   //float dX = (max - min) / static_cast<float>(width) * aspect;
   //float dY = (max - min) / static_cast<float>(height);
-
+/*
   float sy = min;
 
   auto currentPix = imgBuffer_.getData();
@@ -107,7 +171,7 @@ std::string RayTracer::Run() {
   linearmath::vec3<float> dx_dir = {};
   linearmath::vec3<float> dy_dir = {};
 
-  
+ /*
   for (size_t y(0); y < height; ++y) {
     float sx = min;
     for (size_t x(0); x < width; ++x) {
@@ -125,10 +189,10 @@ std::string RayTracer::Run() {
     }
     //sy += dY;
   }
+  */
   prf.finish();
   render_time_ = prf.getFPS();
   return prf.getResults();
-*/
 }
 
 vec3<float> RayTracer::Trace(const Ray &ray, float distanse) {
@@ -210,9 +274,9 @@ bool RayTracer::findIntersections(const Ray & ray) {
   return intersectionFound;
 }
 
-void RayTracer::initCLPlatfrom(size_t platform_num, unsigned char *img) {
-	
+void RayTracer::initCLPlatfrom() {
 	cl_int err;
+    size_t platform_num = 0;
 
 	// 1) Obtain selected platform
 	std::vector<cl::Platform> platforms;
@@ -230,39 +294,38 @@ void RayTracer::initCLPlatfrom(size_t platform_num, unsigned char *img) {
 
 	// 3) Allocate the host memory to be used by OpenCL kernel. Make a buffer from it
 	// For now let's assume that only 1 Mpix image to be used
-	const size_t width = 500;
-	const size_t height = 500;
-	const size_t channels = 3;
+	//const size_t width = 500;
+	//const size_t height = 500;
+	//const size_t channels = 3;
 
-	const size_t buf_size = width*height*channels;
+	//const size_t buf_size = width*height*channels;
 
-	unsigned char *picBuf = img;//new char[buf_size + 1];
-	cl::Buffer outCL(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, buf_size + 1, picBuf, &err);
-	checkErr(err, "Can't create a buffer");
+	//unsigned char *picBuf = img;//new char[buf_size + 1];
+	//cl::Buffer outCL(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, buf_size + 1, picBuf, &err);
+	//checkErr(err, "Can't create a buffer");
 
 	// 4) Query devices from the context
 	devices = context.getInfo<CL_CONTEXT_DEVICES>();
 	checkErr(devices.size() > 0 ? CL_SUCCESS : -1, "The contex doesn't provide any devices");
 
-    auto keeper = KernelKeeper::getInstance();
-    keeper.addKernelToList("logic",L"C:\\Users\\Anton\\Desktop\\tracer\\tracer\\src\\tracelib\\cl_kernels\\logic.cl", devices, context);
+    KernelKeeper::getInstance().addKernelToList("logic",L"C:\\Users\\Anton\\Desktop\\tracer\\tracer\\src\\tracelib\\cl_kernels\\logic.cl", devices, context);
     //keeper.addKernelToList(L"E:\\sources\\tracer\\src\\tracelib\\cl_kernels\\hellworld.cl");
-    auto krnl_draw_circle = keeper.buildKernel("logic");
+    auto krnl_draw_circle = KernelKeeper::getInstance().buildKernel("logic");
 
-    // Set arguments
-    krnl_draw_circle.setArg(0, outCL);
+   // // Set arguments
+   // krnl_draw_circle.setArg(0, outCL);
 
-   //Enqueue kernel to all workgroups and CU ( compute units )
-   cl::CommandQueue queue(context, devices[0]);
+   ////Enqueue kernel to all workgroups and CU ( compute units )
+   //cl::CommandQueue queue(context, devices[0]);
 
-   size_t max_work_dim = 0;
-   devices[0].getInfo(CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, &max_work_dim);
-   size_t work_dims = 2; // Corresponds to the CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS.
-   
-   cl::Event frame_is_done;
-   cl::NDRange offset(0, 0), work_size(width, height);
-   queue.enqueueNDRangeKernel(krnl_draw_circle, offset, work_size, cl::NullRange, nullptr, &frame_is_done);
-   frame_is_done.wait();
+   //size_t max_work_dim = 0;
+   //devices[0].getInfo(CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, &max_work_dim);
+   //size_t work_dims = 2; // Corresponds to the CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS.
+   //
+   //cl::Event frame_is_done;
+   //cl::NDRange offset(0, 0), work_size(width, height);
+   //queue.enqueueNDRangeKernel(krnl_draw_circle, offset, work_size, cl::NullRange, nullptr, &frame_is_done);
+   //frame_is_done.wait();
 
-   queue.enqueueReadBuffer(outCL, CL_TRUE, 0, buf_size, picBuf);
+   //queue.enqueueReadBuffer(outCL, CL_TRUE, 0, buf_size, picBuf);
 }

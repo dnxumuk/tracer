@@ -8,6 +8,8 @@
 #include "..\tracer\scene.h"
 #include <stack>
 
+#include "../common/KernelKeeper.h"
+
 
 
 class RayTracer {
@@ -30,7 +32,7 @@ public:
   linearmath::vec3<float> shader(const Ray &ray);
   bool findIntersections(const Ray &ray);
 
-  void initCLPlatfrom(size_t platform_num, unsigned char *img);
+  void initCLPlatfrom();
 public:
   linearmath::vec3<float>  cameraPos;
   linearmath::vec3<float>  cameraLookAt;

@@ -54,7 +54,8 @@ public:
     aspect_ = aspect;
 	calculateScreen();
   }
-private:
+//private:
+public:
   // Resolution and screen position
   size_t width_;
   size_t height_;
