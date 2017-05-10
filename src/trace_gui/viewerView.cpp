@@ -47,8 +47,9 @@ END_MESSAGE_MAP()
 
 CviewerView::CviewerView() :
   hBitmap_(NULL) {
-  statistics_ = {0};
-  statistics_.min_time = 9999999999;
+  statistics_.rendered_frames_ = 0;
+  statistics_.time_sum = 0.0;
+  statistics_.min_time = 1e10;
   statistics_.max_time = 0.0;
 }
 
@@ -87,17 +88,24 @@ void CviewerView::OnDraw(CDC* /*pDC*/)
   auto pDC = GetDC();
   
   double fps = pDoc->tracer->render_time_;
-  if (fps > statistics_.max_time)
-    statistics_.max_time = fps;
-  else if (fps < statistics_.min_time)
-    statistics_.min_time = fps;
-  statistics_.rendered_frames_++;
-  statistics_.time_sum+=fps;
+  if (fps > 1e-5) {
+    if (fps > statistics_.max_time)
+      statistics_.max_time = fps;
+    if (fps < statistics_.min_time)
+      statistics_.min_time = fps;
+
+    statistics_.rendered_frames_++;
+    statistics_.time_sum += fps;
+  }
   
-  std::string frames = "Frames : " + std::to_string(statistics_.rendered_frames_);
+  std::string frames  = "Frames : " + std::to_string(statistics_.rendered_frames_);
   std::string mintime = "Highest FPS : " + std::to_string(statistics_.max_time);
   std::string maxtime = "Lowest  FPS : " + std::to_string(statistics_.min_time);
-  std::string avgtime = "Average FPS : " + std::to_string(statistics_.time_sum/statistics_.rendered_frames_);
+
+  if (statistics_.time_sum > 1e-5) {
+    std::string avgtime = "Average FPS : " + std::to_string(statistics_.time_sum / statistics_.rendered_frames_);
+    pDC->TextOutW(510, 100, CString(avgtime.c_str()));
+  }
 
   pDC->SetBkMode(TRANSPARENT);
   pDC->TextOutW(10, 10, CString(pDoc->tracer->message.c_str()));
@@ -105,7 +113,6 @@ void CviewerView::OnDraw(CDC* /*pDC*/)
   pDC->TextOutW(510, 30, CString(frames.c_str()));
   pDC->TextOutW(510, 50, CString(mintime.c_str()));
   pDC->TextOutW(510, 70, CString(maxtime.c_str()));
-  pDC->TextOutW(510, 100, CString(avgtime.c_str()));
 
 }
 

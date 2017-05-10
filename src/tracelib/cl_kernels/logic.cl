@@ -52,10 +52,12 @@ __kernel void logic(__global uchar * out, __global ScreenParameters *param, __gl
 	uint shift = 3*(get_global_id(1) * param->frame_width + get_global_id(0));
 	//out[shift] = (uchar)(255.0*get_global_id(0)/param->frame_width);
 	out[shift] = (uchar)(255.0*dtp);
+	out[shift+1] = (uchar)(255.0*dtp);
+	out[shift+2] = (uchar)(255.0*dtp);
 
-	debug[shift] = dtp;
-	debug[shift+1] = 0.0;
-	debug[shift+2] = 0.0;
+	//debug[shift] = dtp;
+	//debug[shift+1] = 0.0;
+	//debug[shift+2] = 0.0;
 
 
 	//out[shift+1] = (uchar)(255.0*y);

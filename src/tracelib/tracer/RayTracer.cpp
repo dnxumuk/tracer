@@ -23,6 +23,9 @@
 
 using namespace linearmath;
 
+const size_t frame_width = 1920;
+const size_t frame_height = 1080;
+
 void checkErr(cl_int err, const char * name) {
   if (err != CL_SUCCESS) {
     std::cerr << "OPEN CL ERROR: " << name << " (" << err << ")" << std::endl;
@@ -39,9 +42,10 @@ void checkErr(cl_int err, const char * name) {
 void RayTracer::Initialize() {
 }
 
-RayTracer::RayTracer() : imgBuffer_(*new Imagemap(500,500)) {
+RayTracer::RayTracer() : imgBuffer_(*new Imagemap(frame_width, frame_height)) {
   scene_ = nullptr;
-  //cameraPos = {0.0f , 0.0f , 100.0f};
+  // Use negative values as unitialized
+  render_time_ = -100.0;
   cameraPos = {0.0f , 0.0f , 100.0f};
   Initialize();
   initCLPlatfrom();
@@ -69,7 +73,7 @@ std::string RayTracer::Run() {
 
   // Create camera via setting up position and direction
   Camera camera;
-  camera.setResolution(500,500);
+  camera.setResolution(imgBuffer_.width(),imgBuffer_.height());
   camera.setPosition({0.0f,0.0f,100.0f}, {0.0f,0.0f,-1.0f});
   camera.setRotation(0.0f);
   camera.setCameraToScreenDistance(4.0);
@@ -99,14 +103,14 @@ std::string RayTracer::Run() {
   // Create 2 buffers. The first one is the rays storage and the other is the buffer made up from image
   cl_int err;
   std::vector<float> debug;
-  debug.resize(500 * 500 * 3);
+  debug.resize(1);
 
   std::vector<cl_ray> rays( camera.getResolution().first * camera.getResolution().first);
 
   cl::Buffer param_buf(context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sizeof(ScreenParameters), &params, &err);
 
   cl::Buffer rays_buffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, sizeof(cl_ray) * rays.size(), rays.data(), &err);
-  cl::Buffer frame_buffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, imgBuffer_.height() * imgBuffer_.width()*3*sizeof(float), imgBuffer_.getData(), &err);
+  cl::Buffer frame_buffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, imgBuffer_.height() * imgBuffer_.width()*3*sizeof(unsigned char), imgBuffer_.getData(), &err);
 
   cl::Buffer debug_buffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, sizeof(float) * debug.size(), debug.data(), &err);
 
@@ -127,8 +131,7 @@ std::string RayTracer::Run() {
   cl::Event frame_is_done;
   cl::NDRange offset(0, 0), work_size(imgBuffer_.width(), imgBuffer_.height());
 
-  std::string msgHeader = "Rendering image of " +
-	  std::to_string(imgBuffer_.width() * imgBuffer_.height() / 1'000'000.0) + " Mpx";
+  std::string msgHeader = "Rendering image of " + std::to_string(imgBuffer_.getMegapixels()) + " Mpx";
   Profiler prf(msgHeader, true);
   prf.start();
 
@@ -224,7 +227,7 @@ bool RayTracer::findIntersections(const Ray & ray) {
 
 void RayTracer::initCLPlatfrom() {
 	cl_int err;
-    size_t platform_num = 0;
+    size_t platform_num = 1;
 
 	// 1) Obtain selected platform
 	std::vector<cl::Platform> platforms;
@@ -234,7 +237,7 @@ void RayTracer::initCLPlatfrom() {
 
 	// 2) Create context in accordance with devices of obtained platform
 	std::vector<cl::Device> devices;
-	platforms[platform_num].getDevices(CL_DEVICE_TYPE_CPU, &devices);
+	platforms[platform_num].getDevices(CL_DEVICE_TYPE_GPU, &devices);
 	checkErr( devices.size() != 0 ? CL_SUCCESS : -1,"Can't obtain devices from selected platform");
 
 	cl::Context context(devices);

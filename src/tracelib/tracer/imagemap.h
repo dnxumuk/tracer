@@ -16,6 +16,11 @@ public:
   size_t height() const { 
     return height_;
   };
+
+  float getMegapixels() const {
+    return 1e-6*width_*height_;
+  }
+
   void reset();
 private:
   unsigned char *imgData_;
