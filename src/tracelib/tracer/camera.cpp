@@ -2,6 +2,8 @@
 #include "ray.h"
 #include <map>
 
+const float pi = 3.14159265359f;
+
 Camera::Camera() {
 }
 
@@ -11,7 +13,6 @@ Camera::~Camera() {
 // Utility functons
 
 float radians(float degrees) {
-  const float pi = 3.14159265359f;
   return pi * degrees / 180.0f;
 }
 
@@ -20,11 +21,8 @@ float get_rotation(float degrees) {
 }
 
 float degrees(float radians) {
-  const float pi = 3.14159265359f;
   return radians / pi * 180.0f;;
 }
-
-
 
 float focal_to_angle(float focal) {
   // Default focal's unit is 'mm'
@@ -34,7 +32,6 @@ float focal_to_angle(float focal) {
 }
 
 // Set and get field of view values
-
 void Camera::setFOVDegrees(float degrees) {
   fov_ = radians(degrees);
 }
@@ -135,54 +132,4 @@ void Camera::calculateScreen()  {
   float coef = width_ / height_;
   scr_height_ = (scr_half_diagonal + scr_half_diagonal) / sqrtf(1 + coef*coef);
   scr_width_ = scr_height_ * coef;
-  //float w = width_;
-  //float h = coef*height_;
-  //(w ^ 2 + h ^ 2) ^ 0.5 = 2*hd;
-  //h ^ 2 + coef ^ 2 * h ^ 2 = 4 * hd ^ 2;
-  //h ^ 2*(1 + coef ^ 2) = 4 * hd ^ 2;
-  //h = sqlr(4 * hd ^ 2 / (1 + coef ^ 2));
-  //h = 2 * hd / sqr(1 + coef ^ 2);
 }
-
-
-//
-//
-//
-
-//
-
-//
-
-
-//
-
-//
-//
-
-//
-//float get_fov(float camera_focal) {
-//  return focal_to_angle(camera_focal);
-//}
-//
-//float get_camera_height(float width, float focal) {
-//  return 0.5f * width * tan(0.5*to_degrees(get_fov(focal)));
-//}
-//
-//float get_camera_fov(float width, float height, float focal) {
-//  return 2.0f * to_degrees(atan(0.5f*height / get_camera_height(width, focal)));
-//}
-//
-//
-//
-//auto get_xy_axices(float rotation, const linearmath::vec3<float> &dir) {
-//  float cos_up = cosf(get_rotation(rotation));
-//  float sin_up = sinf(get_rotation(rotation));
-//  bool is_zero_y_axis_with_dir_cross = false;
-//  linearmath::vec3<float> y_axis(0.0, 0.0, 1.0);
-//  if (is_zero_y_axis_with_dir_cross)
-//    y_axis = {0.0f,1.0f,0.0f};
-//  linearmath::vec3<float> x_axis = y_axis * dir;
-//  y_axis = dir * x_axis;
-//  auto up_vec = x_axis*cos_up + y_axis*sin_up;
-//  return std::tuple<linearmath::vec3<float>, linearmath::vec3<float>, linearmath::vec3<float>>(x_axis,y_axis,up_vec);
-//}

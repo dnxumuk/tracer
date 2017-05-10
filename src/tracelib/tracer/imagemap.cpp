@@ -7,10 +7,10 @@ Imagemap::Imagemap() {
 }
 
 Imagemap::Imagemap(size_t width, size_t height) {
-  // Allocating memory for RGBA-imagemap ( 4 channels by 1 byte per channel );
   width_ = width;
   height_ = height;
   imgData_ = new unsigned char[width*height *bitsPerPixel];
+  reset();
 }
 
 Imagemap::~Imagemap() {
