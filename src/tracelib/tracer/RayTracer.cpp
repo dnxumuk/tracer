@@ -94,6 +94,9 @@ std::string RayTracer::Run() {
   params.SetScreenOrigin(camera.getScreenOrigin());
   params.SetCameraOrigin(camera.getPosition());
 
+  linearmath::vec3<float> axis_dir = camera.getScreenOrigin() - 
+      (camera.getUDir()*params.width_ratio*camera.getResolution().first + camera.getVDir()*params.height_ratio*camera.getResolution().second)*0.5f;
+  params.SetAxisDir((axis_dir - camera.getPosition()).getNormalized());
 
   // Obtain OpenCL kernel 
   auto kernel = KernelKeeper::getInstance().getKernel("logic");
@@ -102,24 +105,17 @@ std::string RayTracer::Run() {
 
   // Create 2 buffers. The first one is the rays storage and the other is the buffer made up from image
   cl_int err;
-  //std::vector<float> debug;
-  //debug.resize(1);
-
-  //std::vector<cl_ray> rays( camera.getResolution().first * camera.getResolution().first);
-
   cl::Buffer param_buf(context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sizeof(ScreenParameters), &params, &err);
+  cl::Buffer frame_buffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, 3*imgBuffer_.getMegapixels()*sizeof(unsigned char), imgBuffer_.getData(), &err);
 
-  //cl::Buffer rays_buffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, sizeof(cl_ray) * rays.size(), rays.data(), &err);
-  cl::Buffer frame_buffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, imgBuffer_.height() * imgBuffer_.width()*3*sizeof(unsigned char), imgBuffer_.getData(), &err);
+  // TODO : RAYS BUFFER SHOULD BE IMPLEMENTED
 
-  //cl::Buffer debug_buffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, sizeof(float) * debug.size(), debug.data(), &err);
+  cl::Buffer rays_buf(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, sizeof(ScreenParameters), &params, &err);
 
   checkErr(err, "Can't create a buffer");
 
   kernel.setArg(0, frame_buffer);
   kernel.setArg(1, param_buf);
- // kernel.setArg(2, debug_buffer);
-
 
   //Enqueue kernel to all workgroups
   cl::CommandQueue queue(context, devices[0]);

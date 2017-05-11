@@ -2,12 +2,6 @@
 #include "../linearmath/vector3d.h"
 #include <CL/cl.h>
 
-struct cl_ray {
-    float origin[3];
-    float dir[3];
-};
-
-
 __declspec(align(32)) struct ScreenParameters {
 public:
 	void SetScreenOrigin(const linearmath::vec3<float> &point) {
@@ -25,6 +19,10 @@ public:
 	void SetHeightDir(const linearmath::vec3<float> &point) {
 		SetFloatArrayData(height_dir, point);
 	}
+
+  void SetAxisDir(const linearmath::vec3<float> &point) {
+    SetFloatArrayData(axis_dir, point);
+  }
 
     cl_uint frame_width;
     cl_uint frame_height;
@@ -47,5 +45,7 @@ private:
 	//
 	float width_dir[4];
 	float height_dir[4];
+  //
+  float axis_dir[4];
 
 };

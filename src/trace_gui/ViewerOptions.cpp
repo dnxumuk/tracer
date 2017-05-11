@@ -23,7 +23,7 @@ BOOL CViewerOptions::OnInitDialog() {
   CDialog::OnInitDialog();
 
   CComboBox* pComboBox = (CComboBox*)GetDlgItem(IDC_PLATFORMS_SEL);
-  assert(pComboBox);
+  //assert(pComboBox);
 
   RenderOptions options;
 
