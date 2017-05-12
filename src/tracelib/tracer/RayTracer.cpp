@@ -7,6 +7,8 @@
 #include "../common/KernelKeeper.h"
 
 #include "../cl_kernels/logic_kernel_attendant.h"
+#include "../cl_kernels/cl_ray_attendant.h"
+
 #include "../common/KernelKeeper.h"
 
 #ifdef _WIN64
@@ -102,14 +104,12 @@ std::string RayTracer::Run() {
 
   // Create 2 buffers. The first one is the rays storage and the other is the buffer made up from image
   cl_int err;
-  //std::vector<float> debug;
-  //debug.resize(1);
 
-  //std::vector<cl_ray> rays( camera.getResolution().first * camera.getResolution().first);
+  std::vector<CLRay> rays(imgBuffer_.width()*imgBuffer_.height());
+  //rays.reserve(imgBuffer_.getMegapixels());
 
   cl::Buffer param_buf(context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sizeof(ScreenParameters), &params, &err);
-
-  //cl::Buffer rays_buffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, sizeof(cl_ray) * rays.size(), rays.data(), &err);
+  cl::Buffer rays_buffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, sizeof(CLRay) * imgBuffer_.width()*imgBuffer_.height(), rays.data(), &err);
   cl::Buffer frame_buffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, imgBuffer_.height() * imgBuffer_.width()*3*sizeof(unsigned char), imgBuffer_.getData(), &err);
 
   //cl::Buffer debug_buffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, sizeof(float) * debug.size(), debug.data(), &err);
@@ -118,7 +118,7 @@ std::string RayTracer::Run() {
 
   kernel.setArg(0, frame_buffer);
   kernel.setArg(1, param_buf);
- // kernel.setArg(2, debug_buffer);
+  kernel.setArg(2, rays_buffer);
 
 
   //Enqueue kernel to all workgroups

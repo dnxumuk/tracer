@@ -135,6 +135,9 @@
     <ClInclude Include="cl_kernels\logic_kernel_attendant.h">
       <Filter>cl_kernels</Filter>
     </ClInclude>
+    <ClInclude Include="cl_kernels\cl_ray_attendant.h">
+      <Filter>cl_kernels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cl_kernels\hellworld.cl">

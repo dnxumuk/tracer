@@ -39,6 +39,7 @@
     <ClCompile Include="tracer\scene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cl_kernels\cl_ray_attendant.h" />
     <ClInclude Include="cl_kernels\logic_kernel_attendant.h" />
     <ClInclude Include="common\defaults.h" />
     <ClInclude Include="common\KernelKeeper.h" />
